@@ -7,7 +7,7 @@ import sys
 
 # Reading input from the input file into list
 freq_change_list = []
-input_filename='input.txt'
+input_filename='input_scenario0.txt'
 print(f'\nUsing input file: {input_filename}\n')
 with open(input_filename) as f:
     # Pull in each line from the input file

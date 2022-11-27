@@ -35,9 +35,6 @@ def get_claim_points(claim):
             ret_val.add((x,y))
     return ret_val
 
-
-    dummy = 123
-
 def get_cpc_from_claims(claims):
     claim_point_count = dict()
     for claim_id, claim in claims.items():
@@ -49,21 +46,21 @@ def get_cpc_from_claims(claims):
 
     return claim_point_count
 
+def get_points_claimed_twice_or_more(claim_point_count):
+    ret_val = set()
+    for point, count in claim_point_count.items():
+        if count > 1:
+            ret_val.add(point)
+    return ret_val
+
 def solve_problem(input_filename):
-    # claim_point_count = dict()
     claims = get_claims_from_input(input_filename)
     claim_point_count = get_cpc_from_claims(claims)
+    points_claimed_twice = get_points_claimed_twice_or_more(claim_point_count)
+    print ('The answer to A is: ' + str(len(points_claimed_twice)) + '\n')
 
-    dummy = 123
 
-    # for claim_id, claim in claims.items():
-    #     if claim in claim_point_count:
-    #         claim_point_count[claim] += 1
-    #     else:
-    #         claim_point_count[claim] = 1
-
-# solve_problem('input.txt')
-solve_problem('input_sample0.txt')
+solve_problem('input_sample1.txt')
 
 def test_single_line_input():
     claims = get_claims_from_input('input_sample0.txt')
@@ -91,4 +88,20 @@ def test_single_line_get_points():
     assert (3,5) in get_claim_points(claims['123'])
     assert (7,5) in get_claim_points(claims['123'])
     assert (8,5) not in get_claim_points(claims['123'])
+
+def test_multiple_lines_get_points_claimed_twice_or_more():
+    claims = get_claims_from_input('input_sample1.txt')
+    claim_point_count = get_cpc_from_claims(claims)
+    points_claimed_twice = get_points_claimed_twice_or_more(claim_point_count)
+    assert len(points_claimed_twice) == 4
+    assert (2,2) not in points_claimed_twice
+    assert (2,3) not in points_claimed_twice
+    assert (3,2) not in points_claimed_twice
+    assert (3,3) in points_claimed_twice
+    assert (3,4) in points_claimed_twice
+    assert (4,3) in points_claimed_twice
+    assert (4,4) in points_claimed_twice
+
+
+
 

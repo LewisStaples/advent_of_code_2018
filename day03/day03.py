@@ -53,11 +53,22 @@ def get_points_claimed_twice_or_more(claim_point_count):
             ret_val.add(point)
     return ret_val
 
+def get_id_no_overlaps(claims, points_claimed_twice_or_more):
+    for claim_id, claim in claims.items():
+        all_points_in_this_claim = get_claim_points(claim)
+        set_intersection = points_claimed_twice_or_more.intersection(all_points_in_this_claim)
+        if len(set_intersection) == 0:
+            return claim_id
+
+
 def solve_problem(input_filename):
     claims = get_claims_from_input(input_filename)
     claim_point_count = get_cpc_from_claims(claims)
-    points_claimed_twice = get_points_claimed_twice_or_more(claim_point_count)
-    print ('The answer to A is: ' + str(len(points_claimed_twice)) + '\n')
+    points_claimed_twice_or_more = get_points_claimed_twice_or_more(claim_point_count)
+    print ('The answer to A is: ' + str(len(points_claimed_twice_or_more)) + '\n')
+
+    id_no_overlap = get_id_no_overlaps(claims, points_claimed_twice_or_more)
+    print (f'The answer to B is: {id_no_overlap}\n')
 
 
 solve_problem('input_sample1.txt')
@@ -92,15 +103,15 @@ def test_single_line_get_points():
 def test_multiple_lines_get_points_claimed_twice_or_more():
     claims = get_claims_from_input('input_sample1.txt')
     claim_point_count = get_cpc_from_claims(claims)
-    points_claimed_twice = get_points_claimed_twice_or_more(claim_point_count)
-    assert len(points_claimed_twice) == 4
-    assert (2,2) not in points_claimed_twice
-    assert (2,3) not in points_claimed_twice
-    assert (3,2) not in points_claimed_twice
-    assert (3,3) in points_claimed_twice
-    assert (3,4) in points_claimed_twice
-    assert (4,3) in points_claimed_twice
-    assert (4,4) in points_claimed_twice
+    points_claimed_twice_or_more = get_points_claimed_twice_or_more(claim_point_count)
+    assert len(points_claimed_twice_or_more) == 4
+    assert (2,2) not in points_claimed_twice_or_more
+    assert (2,3) not in points_claimed_twice_or_more
+    assert (3,2) not in points_claimed_twice_or_more
+    assert (3,3) in points_claimed_twice_or_more
+    assert (3,4) in points_claimed_twice_or_more
+    assert (4,3) in points_claimed_twice_or_more
+    assert (4,4) in points_claimed_twice_or_more
 
 
 

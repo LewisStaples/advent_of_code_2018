@@ -52,14 +52,34 @@ def get_minute_most_sleep(guard_id, guard_records):
     ret_val = [k for (k,v) in guard_records[guard_id].items() if v == max_count][0]
     return ret_val
 
+def get_product_strategy2(guard_records):
+    largest_example = {
+        'guard_id': 0,
+        'largest_minute': None,
+        'largest_count': 0
+    }
+    for guard_id in guard_records:
+        max_sleep_total = max(guard_records[guard_id].values())
+
+        if max_sleep_total > largest_example['largest_count']:
+            largest_example['guard_id'] = guard_id
+            largest_example['largest_minute'] = [k for (k,v) in guard_records[guard_id].items() if v == max_sleep_total][0]
+            largest_example['largest_count'] = guard_records[guard_id][largest_example['largest_minute']]
+
+    return largest_example['guard_id'] * largest_example['largest_minute']
+
 def solve_problem(input_filename):
     sorted_records = get_input_lines_sorted(input_filename)
     guard_records = get_guard_records(sorted_records)
+
+    # Persuing "Strategy 1" (part A)
     guard_id_with_most_total_sleep = get_guard_id_with_most_total_sleep(guard_records)
     minute_that_most_sleepy_guard_is_most_likely_asleep = get_minute_most_sleep(guard_id_with_most_total_sleep, guard_records)
     print(f'The answer to part A is {guard_id_with_most_total_sleep * minute_that_most_sleepy_guard_is_most_likely_asleep}\n')
 
-solve_problem('input_sample0.txt')
+    # Persuing "Strategy 2" (part B)
+    product_strategy2 = get_product_strategy2(guard_records)
+    print(f'The answer to part A is {product_strategy2}\n')
 
-    
+solve_problem('input_sample0.txt')
 

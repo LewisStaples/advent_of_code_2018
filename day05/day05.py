@@ -1,4 +1,6 @@
 import string
+import copy
+
 
 def get_input_line(input_filename):
     print(f'\nUsing input file: {input_filename}\n')
@@ -17,7 +19,10 @@ def get_all_pairs():
 
 def solve_problem(input_filename):
     all_pairs = get_all_pairs()
-    polymer_latest = get_input_line(input_filename)
+    polymer_original = get_input_line(input_filename)
+    polymer_latest = copy.deepcopy(polymer_original)
+
+    # Solve part A
     while True:
         polymer_len = len(polymer_latest)
         for pair in all_pairs:
@@ -26,4 +31,30 @@ def solve_problem(input_filename):
             break
     print(f'The answer to part A is {len(polymer_latest)}\n')
 
-solve_problem('input_sample0.txt')
+    # Solve part B
+    shortest_len = float('inf')
+    for i in range(26):
+        polymer_copy = copy.deepcopy(polymer_original)
+        uppercase_char = chr(ord('A') + i)
+        while True:
+            polymer_len = len(polymer_copy)
+            polymer_copy = polymer_copy.replace(uppercase_char, '')
+            if len(polymer_copy) == polymer_len:
+                break
+        lowercase_char = chr(ord('a') + i)
+        while True:
+            polymer_len = len(polymer_copy)
+            polymer_copy = polymer_copy.replace(lowercase_char, '')
+            if len(polymer_copy) == polymer_len:
+                break
+
+        while True:
+            polymer_len = len(polymer_copy)
+            for pair in all_pairs:
+                polymer_copy = polymer_copy.replace(pair, '')
+            if len(polymer_copy) == polymer_len:
+                shortest_len = min(shortest_len, len(polymer_copy))
+                break
+    print(f'The answer to part B is {shortest_len}\n')
+
+solve_problem('input.txt')

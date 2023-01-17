@@ -30,22 +30,25 @@ def get_input(input_filename):
             steps_before_other_steps.add(earlier_step)
 
     return rules, steps_before_other_steps
-    
-def solve_problem(input_filename):
-    final_order = list()
-    rules, steps_before_other_steps = get_input(input_filename)
+
+def get_step_order(rules, steps_before_other_steps):
+    step_order = []
     available_steps = list(steps_before_other_steps - rules.keys())
     while len(available_steps) > 0:
         available_steps.sort()
         this_step = available_steps.pop(0)
-        final_order.append(this_step)
+        step_order.append(this_step)
         for later_step, earlier_steps in rules.items():
             if this_step in earlier_steps:
                 rules[later_step].remove(this_step)
                 if len(rules[later_step]) == 0:
                     available_steps.append(later_step)
-    final_order = ''.join(final_order)
-    print(f'The solution to A is: {final_order}\n')
+    step_order = ''.join(step_order)
+    return step_order
 
-solve_problem('input.txt')
+def solve_problem(input_filename):
+    rules, steps_before_other_steps = get_input(input_filename)
+    step_order = get_step_order(rules, steps_before_other_steps)
+    print(f'The solution to A is: {step_order}\n')
+solve_problem('input_sample0.txt')
 

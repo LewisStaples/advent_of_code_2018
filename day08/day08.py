@@ -13,20 +13,26 @@ def get_input(input_filename):
     return the_input
 
 
-def analyze_node(node_list, node_ID = None):
-    if node_ID is not None:
-        print(f'Node {node_ID}: {node_list}')
-        print(f'Header (first two elements): {node_list[:2]}')
-
-        print(f'Metadata (last {node_list[1]} elements): {node_list[(node_list[1] * -1):]}')
+def analyze_node(node_list, node_ID, start_index):
+    # Display information
+    if len(node_list) < 20:
+        print(f"Node {node_ID}'s Header (first two elements): {node_list[start_index : start_index + 2]}")
+    child_index = start_index + 2
+    metadata_sum = 0
+    for i in range(node_list[start_index]):
+        return_values = analyze_node(node_list, f'{node_ID}-{i+1}', child_index)
+        child_index = return_values[0]
+        metadata_sum += return_values[1]
+    for _ in range(node_list[start_index + 1]):
+        metadata_sum += node_list[child_index]
+        child_index += 1
+    return child_index, metadata_sum
 
 def solve_problem(input_filename):
     all_nodes = get_input(input_filename)
     if len(all_nodes) < 20:
-        analyze_node(all_nodes, 'A')
-    else:
-        analyze_node(all_nodes)
-
-
+        print(f'Node Root: {all_nodes}')
+    return_values = analyze_node(all_nodes, 'Root', 0)
+    print(f'The sum of metadata is {return_values[1]}')
 solve_problem('input_sample0.txt')
 

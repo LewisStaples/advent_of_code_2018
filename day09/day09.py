@@ -25,16 +25,25 @@ class Circle:
     current_index: int
     marble_circle: list
 
-    def insert(self, new_marble):
-        if len(self.marble_circle) == 1:
-            self.marble_circle.insert(1, new_marble)
-            self.current_index = 1
-            return
-        
-        # implicit else ....
+    def update(self, next_marble):
+        '''
+        The update method handles updates to the circle of marbles in a particular turn.
+        The return value is the amount to be added to the player's score.
+        '''
 
+        # Update circle by removing a marble (don't insert next_marble)
+        if next_marble % 23 == 0:
+            ret_val = next_marble
+            self.current_index -= 7
+            self.current_index %= len(self.marble_circle)
+            # print(f'Removing marble {self.marble_circle[self.current_index]} from index {self.current_index} ...')
+            ret_val += self.marble_circle.pop(self.current_index)
+            return ret_val
+        
+        # Update by inserting a new marble
         self.current_index = (self.current_index + 2) % len(self.marble_circle)
-        self.marble_circle.insert(self.current_index, new_marble)
+        self.marble_circle.insert(self.current_index, next_marble)
+        return 0
 
     def __repr__(self):
         ret_val = '['
@@ -54,22 +63,24 @@ class Circle:
 
 def solve_problem(i_v):
     player_count, last_marble_value = i_v
-    print(f'Using player count {player_count}, and last marble value {last_marble_value}:')
+    print(f'Using player count {player_count}, and last marble value {last_marble_value}: ', end='')
     circle = Circle(0, [0])
-    for new_marble in range(1, last_marble_value + 1):  # This is what should be used
-        circle.insert(new_marble)
-        print(f'Player {(new_marble - 1) % player_count + 1}, circle: ', end='')
-        print(circle)
-    print()
+    player_scores = {x:0 for x in range(1, player_count + 1)}
+    for next_marble in range(1, last_marble_value + 1):
+        player_number = (next_marble - 1) % player_count + 1
+        player_scores[player_number] += circle.update(next_marble)
+        # print(f'Player {player_number}, circle: ', end='')
+        # print(circle)
+    # print()
+    print(f'high score is {max(player_scores.values())}')
 
 def open_input_file(input_filename):
     input_values = get_input_values(input_filename)
     for i_v in input_values:
         solve_problem(i_v)
-        break # only read the first one (for now)
-    dummy = 123
+    print()
 
 
-open_input_file('input_sample0.txt')
+open_input_file('input.txt')
 
 

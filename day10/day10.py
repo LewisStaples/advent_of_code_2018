@@ -29,16 +29,49 @@ def get_input(input_filename):
             positions.append(str_to_np_array(l_string))
             velocities.append(str_to_np_array(r_string))
 
+            print(l_string)
+            print(r_string)
+    print()
     return positions, velocities
 
+def get_bounding_box(positions):
+    return_value = {
+        'smallest_x': float('inf'),
+        'largest_x': float('-inf'),
+        'smallest_y': float('inf'),
+        'largest_y': float('-inf'),
+        }
+    for x,y in positions:
+        return_value['smallest_x'] = min(return_value['smallest_x'], x)
+        return_value['largest_x'] = max(return_value['largest_x'], x)
+        return_value['smallest_y'] = min(return_value['smallest_y'], y)
+        return_value['largest_y'] = max(return_value['largest_y'], y)
+    return return_value
+
+def display(positions):
+    bounding_box = get_bounding_box(positions)
+    print(f'Bounding box: {bounding_box}\n')
     
+    for y in range(bounding_box['smallest_y'], bounding_box['largest_y'] + 1):
+        for x in range(bounding_box['smallest_x'], bounding_box['largest_x'] + 1):
+            print('.', end = '')
+        print()
+    print()
+
+
+            # BELOW CODE TRIGGERING AN ERROR .... DETERMINE ALTERNATIVE ....
+            # if np.array([x,y]) in positions:
+            #     print('#')
+            # else:
+            #     print('.')
+
 def solve_problem(input_filename):
     positions, velocities = get_input(input_filename)
+    display(positions)
 
 
 solve_problem('input_sample0.txt')
 
-# def test_sample_0():
-#     solve_problem('input_sample0.txt')
+
     
 

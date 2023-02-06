@@ -10,8 +10,8 @@ import numpy as np
 
 def str_to_np_array(in_string):
     the_list = list(in_string.split(', '))
-    the_list = [int(x) for x in the_list]
-    return np.array(the_list)
+    return [int(x) for x in the_list]
+
 
 def get_input(input_filename):
     positions = list()
@@ -48,30 +48,69 @@ def get_bounding_box(positions):
         return_value['largest_y'] = max(return_value['largest_y'], y)
     return return_value
 
-def display(positions):
+def display(positions, title):
     bounding_box = get_bounding_box(positions)
-    print(f'Bounding box: {bounding_box}\n')
-    
+    # print(f'Bounding box: {bounding_box}\n')
+    print(title)
     for y in range(bounding_box['smallest_y'], bounding_box['largest_y'] + 1):
         for x in range(bounding_box['smallest_x'], bounding_box['largest_x'] + 1):
-            print('.', end = '')
+            if [x,y] in positions:
+                print('#', end= '')
+            else:
+                print('.', end= '')
         print()
     print()
 
+def count_positions_on_bounding_box(positions, bounding_box):
+    '''
+    Note that any positions in a corner will get counted twice.
+    (That is immaterial, since what matters is to detect the 
+    spike in this value when the problem is solved)
+    '''
+    ret_val = 0
+    for position in positions:
+        for the_label, rhs_value in bounding_box.items():
+            if position[ord(the_label[-1]) - ord('x')] == rhs_value:
+                ret_val += 1
+    return ret_val
 
-            # BELOW CODE TRIGGERING AN ERROR .... DETERMINE ALTERNATIVE ....
-            # if np.array([x,y]) in positions:
-            #     print('#')
-            # else:
-            #     print('.')
+def bounding_box_length(bounding_box):
+    return 2 * (bounding_box['largest_x'] - bounding_box['smallest_x'] + bounding_box['largest_y'] - bounding_box['smallest_y'])
+
+def completed(positions):
+    bounding_box = get_bounding_box(positions)
+    count_of_POBB = count_positions_on_bounding_box(positions, bounding_box)
+    print(f'count of POBB = {count_of_POBB}')
+    bbl = bounding_box_length(bounding_box)
+    print(f'bbl = {bbl}')
+    print('calling completed function ....')
+
+    print()
+
+
+
+def next_step(positions, velocities):
+    ret_val = list()
+    for the_index in range(len(positions)):
+        ret_val.append(
+            [
+                positions[the_index][0] + velocities[the_index][0] ,
+                positions[the_index][1] + velocities[the_index][1]
+            ]
+        )
+    return ret_val
 
 def solve_problem(input_filename):
     positions, velocities = get_input(input_filename)
-    display(positions)
-
+    display(positions, 'Initial Positions')
+    time_elapsed = 0
+    while True:
+        time_elapsed += 1
+        positions = next_step(positions, velocities)
+        display(positions, f'Positions after time {time_elapsed} has elapsed')
+        if time_elapsed > 3:
+            break
+        if completed(positions):
+            break
 
 solve_problem('input_sample0.txt')
-
-
-    
-

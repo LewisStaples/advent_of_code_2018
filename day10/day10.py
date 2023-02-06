@@ -4,11 +4,11 @@
 # https://adventofcode.com/2018/day/10
 
 import numpy as np
+from collections import deque 
 
-# POTENTIAL ALTERNATIVE FOR MU
-# TLIPLE LINE INPUT FILES ....
 
-def str_to_np_array(in_string):
+
+def str_to_list(in_string):
     the_list = list(in_string.split(', '))
     return [int(x) for x in the_list]
 
@@ -26,12 +26,12 @@ def get_input(input_filename):
             l_string = l_string[10:]
             r_string = r_string[:-1]
 
-            positions.append(str_to_np_array(l_string))
-            velocities.append(str_to_np_array(r_string))
+            positions.append(str_to_list(l_string))
+            velocities.append(str_to_list(r_string))
 
-            print(l_string)
-            print(r_string)
-    print()
+            # print(l_string)
+            # print(r_string)
+    # print()
     return positions, velocities
 
 def get_bounding_box(positions):
@@ -77,40 +77,64 @@ def count_positions_on_bounding_box(positions, bounding_box):
 def bounding_box_length(bounding_box):
     return 2 * (bounding_box['largest_x'] - bounding_box['smallest_x'] + bounding_box['largest_y'] - bounding_box['smallest_y'])
 
-def completed(positions):
+def bounding_box_area(bounding_box):
+    return (bounding_box['largest_x'] - bounding_box['smallest_x']) + (bounding_box['largest_y'] - bounding_box['smallest_y'])
+
+
+def completed(positions, time_elapsed, last_three_bba):
+    # print(f'Time elapsed: {time_elapsed}      ', end = '')
     bounding_box = get_bounding_box(positions)
+
     count_of_POBB = count_positions_on_bounding_box(positions, bounding_box)
-    print(f'count of POBB = {count_of_POBB}')
+    # print(f'count of POBB = {count_of_POBB}')
+
     bbl = bounding_box_length(bounding_box)
-    print(f'bbl = {bbl}')
-    print('calling completed function ....')
+    # print(f'bbl = {bbl}')
 
-    print()
+    bba = bounding_box_area(bounding_box)
+    # print(f'bba = {bba}')
+
+    last_three_bba.append(bba)
+    last_three_bba.popleft()
+
+    if last_three_bba[1] < min(last_three_bba[0], last_three_bba[2]):
+        print(f'Display using time:  {time_elapsed}')
+        return True
+    dummy = 123
+
+
+    # print('calling completed function ....')
+
+    # print()
 
 
 
-def next_step(positions, velocities):
+def next_step(positions, velocities, step = 1):
     ret_val = list()
     for the_index in range(len(positions)):
         ret_val.append(
             [
-                positions[the_index][0] + velocities[the_index][0] ,
-                positions[the_index][1] + velocities[the_index][1]
+                positions[the_index][0] + step * velocities[the_index][0] ,
+                positions[the_index][1] + step * velocities[the_index][1]
             ]
         )
     return ret_val
 
 def solve_problem(input_filename):
     positions, velocities = get_input(input_filename)
-    display(positions, 'Initial Positions')
+    # display(positions, 'Initial Positions')
     time_elapsed = 0
+    last_three_bba = deque([float('inf'), float('inf'), float('inf')])
     while True:
         time_elapsed += 1
         positions = next_step(positions, velocities)
-        display(positions, f'Positions after time {time_elapsed} has elapsed')
-        if time_elapsed > 3:
+        # display(positions, f'Positions after time {time_elapsed} has elapsed')
+        # if time_elapsed > 25:
+            # break
+        if completed(positions, time_elapsed, last_three_bba):
             break
-        if completed(positions):
-            break
-
-solve_problem('input_sample0.txt')
+    
+    positions = next_step(positions, velocities, -1)
+    display(positions, 'Final Positions')
+    print()
+solve_problem('input.txt')

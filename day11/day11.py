@@ -26,38 +26,43 @@ def get_serial_number(input_filename):
     return serial_number
 
 
-def get_sum(fuel_cell_grid, x_in, y_in):
+def get_sum(fuel_cell_grid, dimension_in, x_in, y_in):
     sum = 0
-    for x in range(x_in, x_in + 3):
-        for y in range(y_in, y_in + 3):
-            sum += fuel_cell_grid[x][y]
+    for x in range(x_in, x_in + dimension_in):
+        for y in range(y_in, y_in + dimension_in):
+            try:
+                sum += fuel_cell_grid[x][y]
+            except IndexError:
+                dummy = 123
     return sum
 
-def get_t_l_coords_largest_3x3_square(fuel_cell_grid):
+def get_answers(fuel_cell_grid):
     best_seen = {
         'highest_sum': float('-inf'),
         'x': None,
         'y': None,
+        'dimension': None,
     }
-    for x in range(298):
-        for y in range(298):
-            this_sum = get_sum(fuel_cell_grid, x, y)
-            if this_sum > best_seen['highest_sum']:
-                best_seen['highest_sum'] = this_sum
-                best_seen['x'] = x
-                best_seen['y'] = y
 
-    return f'{best_seen["x"]},{best_seen["y"]}'
+    # USING THE BELOW LINE TAKES TOO LONG ....
+    # for dimension in range(1, 301):
+    
+    for dimension in range(3, 4):
+        for x in range(0, 301 - dimension):
+            for y in range(0, 301 - dimension):
+                this_sum = get_sum(fuel_cell_grid, dimension, x, y)
+                if this_sum > best_seen['highest_sum']:
+                    best_seen['highest_sum'] = this_sum
+                    best_seen['x'] = x
+                    best_seen['y'] = y
+                    best_seen['dimension'] = dimension
 
+    return f'{best_seen["x"]},{best_seen["y"]},{best_seen["dimension"]}' , 'not-yet-solved'
+    
 serial_number = get_serial_number('input.txt')
 fuel_cell_grid = get_grid(serial_number)
 
-
-
-answer_part1 = get_t_l_coords_largest_3x3_square(fuel_cell_grid)
-
-# print(f'{answer_part1["x"]},{answer_part1["y"]}')
+answer_part1 , answer_part2 = get_answers(fuel_cell_grid)
 print(f'The answer to part 1 (A) is: {answer_part1}')
-
-
+print(f'The answer to part 2 (B) is: {answer_part2}')
 

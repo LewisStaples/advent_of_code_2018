@@ -44,9 +44,7 @@ def get_answers(fuel_cell_grid):
         'dimension': None,
     }
 
-    # USING THE BELOW LINE TAKES TOO LONG ....
-    # for dimension in range(1, 301):
-    
+    # Part 1 / A:
     for dimension in range(3, 4):
         for x in range(0, 301 - dimension):
             for y in range(0, 301 - dimension):
@@ -56,8 +54,20 @@ def get_answers(fuel_cell_grid):
                     best_seen['x'] = x
                     best_seen['y'] = y
                     best_seen['dimension'] = dimension
+    part_one = f'{best_seen["x"]},{best_seen["y"]},{best_seen["dimension"]}' 
 
-    return f'{best_seen["x"]},{best_seen["y"]},{best_seen["dimension"]}' , 'not-yet-solved'
+    # Part 2 / B:
+
+    # Create a summed-area table
+    summed_area__fuel_cell_grid = list()
+    for i in range(300):
+        summed_area__fuel_cell_grid.append(list())
+        for j in range(300):
+            # Modify below to include values to the left and above of it
+            new_value = fuel_cell_grid[i][j]
+            summed_area__fuel_cell_grid[i].append(new_value)
+    
+    return part_one , 'not-yet-solved'
     
 serial_number = get_serial_number('input.txt')
 fuel_cell_grid = get_grid(serial_number)

@@ -26,15 +26,15 @@ def get_serial_number(input_filename):
     return serial_number
 
 
-def get_sum(fuel_cell_grid, dimension_in, x_in, y_in):
-    sum = 0
-    for x in range(x_in, x_in + dimension_in):
-        for y in range(y_in, y_in + dimension_in):
-            try:
-                sum += fuel_cell_grid[x][y]
-            except IndexError:
-                dummy = 123
-    return sum
+# def get_sum(fuel_cell_grid, dimension_in, x_in, y_in):
+#     sum = 0
+#     for x in range(x_in, x_in + dimension_in):
+#         for y in range(y_in, y_in + dimension_in):
+#             try:
+#                 sum += fuel_cell_grid[x][y]
+#             except IndexError:
+#                 dummy = 123
+#     return sum
 
 def get_summed_area_table(input_table):
     # Require that input_table is a list of lists of int 
@@ -61,50 +61,58 @@ def get_summed_area_table(input_table):
             # print(summed_area__table)
     return summed_area__table
 
+    
 def get_answers(fuel_cell_grid):
+
+
+    # Solving Part 1 / A with the summed area table
+    sum_area_FCG = get_summed_area_table(fuel_cell_grid)
+
+    dimension = 3
     best_seen = {
         'highest_sum': float('-inf'),
         'x': None,
         'y': None,
         'dimension': None,
     }
+    for x in range(0, 300 - dimension):
+        for y in range(0, 300 - dimension):
+            this_sum = sum_area_FCG[x][y] + sum_area_FCG[x+dimension][y+dimension] - sum_area_FCG[x+dimension][y] - sum_area_FCG[x][y+dimension]
+            if this_sum > best_seen['highest_sum']:
+                best_seen['highest_sum'] = this_sum
+                best_seen['x'] = x + 1
+                best_seen['y'] = y + 1
+                best_seen['dimension'] = dimension
+    part_one = f'{best_seen["x"]},{best_seen["y"]}'
 
-    # Part 1 / A:
-    for dimension in range(3, 4):
-        for x in range(0, 301 - dimension):
-            for y in range(0, 301 - dimension):
-                this_sum = get_sum(fuel_cell_grid, dimension, x, y)
+    # Solving Part 2 / B with the summed area table
+    sum_area_FCG = get_summed_area_table(fuel_cell_grid)
+
+
+    best_seen = {
+        'highest_sum': float('-inf'),
+        'x': None,
+        'y': None,
+        'dimension': None,
+    }
+    for dimension in range(1, 301):
+        for x in range(0, 300 - dimension):
+            for y in range(0, 300 - dimension):
+                this_sum = sum_area_FCG[x][y] + sum_area_FCG[x+dimension][y+dimension] - sum_area_FCG[x+dimension][y] - sum_area_FCG[x][y+dimension]
                 if this_sum > best_seen['highest_sum']:
                     best_seen['highest_sum'] = this_sum
-                    best_seen['x'] = x
-                    best_seen['y'] = y
+                    best_seen['x'] = x + 1
+                    best_seen['y'] = y + 1
                     best_seen['dimension'] = dimension
-    part_one = f'{best_seen["x"]},{best_seen["y"]},{best_seen["dimension"]}' 
-
-    # Part 2 / B:
-
-    summed_area__fuel_cell_grid = get_summed_area_table(fuel_cell_grid)
-    # # Create a summed-area table
-    # summed_area__fuel_cell_grid = list()
-    # for i in range(300):
-    #     summed_area__fuel_cell_grid.append(list())
-    #     for j in range(300):
-    #         # Modify below to include values to the left and above of it
-    #         new_value = fuel_cell_grid[i][j]
-    #         summed_area__fuel_cell_grid[i].append(new_value)
     
-    return part_one , 'not-yet-solved'
+    part_two = f'{best_seen["x"]},{best_seen["y"]},{best_seen["dimension"]}'
+    return part_one , part_two
 
-def display(table):
-    for i in range(len(table)):
-        for j in range(len(table[0])):
-            print(f'{table[i][j]} ', end = ' ')
-        print()
-    print()
 
 def test__get_summed_area_table():
     # Using example from slide 3 on the below PDF
     # https://developer.amd.com/wordpress/media/2012/10/GDC2005_SATEnvironmentReflections.pdf
+
     init_table = list()
     init_table.append([2, 3, 2, 1])
     init_table.append([3, 0, 1, 2])
@@ -124,10 +132,10 @@ def test__get_summed_area_table():
     # print( s_a_t[0] )
 
 
-# serial_number = get_serial_number('input.txt')
-# fuel_cell_grid = get_grid(serial_number)
+serial_number = get_serial_number('input.txt')
+fuel_cell_grid = get_grid(serial_number)
 
-# answer_part1 , answer_part2 = get_answers(fuel_cell_grid)
-# print(f'The answer to part 1 (A) is: {answer_part1}')
-# print(f'The answer to part 2 (B) is: {answer_part2}')
+answer_part1 , answer_part2 = get_answers(fuel_cell_grid)
+print(f'The answer to part 1 (A) is: {answer_part1}')
+print(f'The answer to part 2 (B) is: {answer_part2}')
 

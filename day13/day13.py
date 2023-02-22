@@ -55,36 +55,19 @@ def get_first_crash_location(tracks, old_cart_collection_list):
             # Compose a new list for one possible state of where carts could be at the end of this clock tick
             new_cart_collection = list()
             # For starting position of one cart in one possible state of all carts
-            for old_cart in old_cart_collection:
+            for index_old_cart, old_cart in enumerate(old_cart_collection):
+                intersection_indices = list()
                 old_track_ch, old_location = old_cart
                 old_location = old_cart[1]
                 old_track_ch = tracks[tuple(old_location)]
                 if old_track_ch == '+':
+                    intersection_indices.append(index_old_cart)
 
-                    #
-                    # NEEDED TO TEST IN THE FUTURE !!!!
-                    #
+                    # Now go to the next cart
+                    continue
 
-                    for new_cart_ch, step in DIRECTIONS:
-                        # copy.deepcopy(old_cart_collection).append(['<',old_location + step])
-                        if new_cart_ch != '<':
-                            new_cart_collection = copy.deepcopy(old_cart_collection)
-                        else:
-                            new_cart_collection = old_cart_collection
-                        
-                        #
-                        # NEED TO ADD, AND THEN TEST ... Remove old cart from new_cart_collection
-                        #
 
-                        new_cart_collection.append([new_cart_ch,old_location + step])
-                        dummy = 123
-                        new_cart_collection_list.append(new_cart_collection)
 
-                        # Skip below code for updating new_cart_collection
-                        continue
-
-                # Implement later .....
-                
                 new_cart = copy.deepcopy(old_cart)
                 if old_track_ch in ['\\','/']:
                     # Modify cart character ... 1:1 relationship
@@ -93,19 +76,85 @@ def get_first_crash_location(tracks, old_cart_collection_list):
                     pass
                 else:
                     assert(old_track_ch in ['|','-'])
-                    dummy = 123
-                
+
                 # Move cart, based on new_cart
                 new_cart[1] += DIRECTIONS[new_cart[0]]
                 # new_cart_collection_list.append(old_cart_collection)
                 new_cart_collection.append(new_cart)
 
-            new_cart_collection_list.append(new_cart_collection)
+        dummy = 123
+        nccs_before = [new_cart_collection]
+        nccs_after = []
+        for cart_intersection_index in intersection_indices:
+            # nccs_after = []
+            for i, ncc in enumerate(nccs_before):
+                nccs_after.append(copy.deepcopy(ncc))
+
+            for new_cart_ch, step in DIRECTIONS.items():
+                nccs_after[-1][cart_intersection_index][0] = new_cart_ch
+                nccs_after[-1][cart_intersection_index][1] += step
+
+
+        # new_cart_collection_list.append(new_cart_collection)
+        # new_cart_collection_list = nccs_after
+        if len(nccs_after) == 0:
+            new_cart_collection_list = [new_cart_collection]
+        else:
+            new_cart_collection_list = nccs_after
+    
 
         display(tracks, new_cart_collection_list, timestamp)
         old_cart_collection_list = new_cart_collection_list
         # break
     return ''
+
+
+
+
+
+
+
+
+
+                # if old_track_ch == '+':
+                    # continue
+
+                    # for new_cart_ch, step in DIRECTIONS.items():
+
+                    #     pass
+                    # # Now go to the next cart
+                    # continue
+
+                    #
+                    # NEEDED TO TEST IN THE FUTURE !!!!
+                    #
+
+                    # for new_cart_ch, step in DIRECTIONS.items():
+                    #     # copy.deepcopy(old_cart_collection).append(['<',old_location + step])
+                    #     # if new_cart_ch != '<':
+                    #     new_cart_collection = copy.deepcopy(new_cart_collection)
+                    #     # else:
+                    #         # new_cart_collection = old_cart_collection
+                        
+                    #     #
+                    #     # NEED TO ADD, AND THEN TEST ... Remove old cart from new_cart_collection
+                    #     #
+                    #     new_cart_collection.pop(index_old_cart)
+                    #     new_cart_collection.append([new_cart_ch,old_location + step])
+                    #     dummy = 123
+                    #     new_cart_collection_list.append(new_cart_collection)
+
+                    #     dummy = 123
+
+                    # # Now go to the next cart
+                    # continue
+
+                # Implement later .....
+
+
+
+
+
 
 
 
@@ -129,11 +178,10 @@ def display(tracks, cart_collection_list, timestamp):
     '''
 
 
-    X_MAX = 20
-    Y_MAX = 10
+    X_MAX, Y_MAX = (20, 6)
     print(f'ALL POSSIBLE LOCATIONS OF CARTS AT TIMESTAMP {timestamp}:')
     for cart_collection in cart_collection_list:
-        print()
+        # print()
         for y in range(Y_MAX + 1):
             for x in range(X_MAX + 1):
                 location = np.array([x,y])
@@ -151,7 +199,7 @@ def display(tracks, cart_collection_list, timestamp):
             print()
 
     # PREVENTING INFINITE LOOP, FOR NOW .....
-    if timestamp == 1:
+    if timestamp == 7:
         sys.exit(f'PLANNED EXIT FOR TIMESTAMP {timestamp}')
 
 

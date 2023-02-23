@@ -69,13 +69,40 @@ def get_first_crash_location(tracks, old_cart_collection_list):
 
 
                 new_cart = copy.deepcopy(old_cart)
-                if old_track_ch in ['\\','/']:
-                    # Modify cart character ... 1:1 relationship
-                    # new_cart = None
+                # if old_track_ch in ['\\','/']:
+                #     # Modify cart character ... 1:1 relationship
+                if old_track_ch == '\\':
+                    # < goes to ^ and vice versa, > goes to v and vice versa
+                    if new_cart[0] == '<':
+                        new_cart[0] = '^'
+                    elif new_cart[0] == '^':
+                        new_cart[0] = '<'
+                    elif new_cart[0] == '>':
+                        new_cart[0] = 'v'
+                    elif new_cart[0] == 'v':
+                        new_cart[0] = '>'
+                    else:
+                        raise ValueError(f'Cart character of {new_cart[0]} is not allowed')
+                elif old_track_ch == '/':
+                    # < goes to v and vice versa, > goes to ^ and vice versa
+                    if new_cart[0] == '<':
+                        new_cart[0] = 'v'
+                    elif new_cart[0] == 'v':
+                        new_cart[0] = '<'
+                    elif new_cart[0] == '>':
+                        new_cart[0] = '^'
+                    elif new_cart[0] == '^':
+                        new_cart[0] = '>'
+                    else:
+                        raise ValueError(f'Cart character of {new_cart[0]} is not allowed')
+
                     
                     pass
                 else:
-                    assert(old_track_ch in ['|','-'])
+                    try:
+                        assert(old_track_ch in ['|','-'])
+                    except AssertionError:
+                        print(f'Invalid character: {old_track_ch}')
 
                 # Move cart, based on new_cart
                 new_cart[1] += DIRECTIONS[new_cart[0]]
@@ -159,11 +186,24 @@ def get_first_crash_location(tracks, old_cart_collection_list):
 
 
 def print_cart_if_here(cart_collection, location):
+    detected_cart = ''
     for cart in cart_collection:
         if tuple(location) == tuple(cart[1]):
-            print(cart[0], end='')
-            return True
-    return False
+            # ret_val = True
+            if len(detected_cart) > 0:
+                print('X', end='')
+                return True
+
+            detected_cart = cart[0]
+            # print(cart[0], end='')
+            # return True
+    # return False
+    if len(detected_cart) > 0:
+        print(detected_cart
+        , end='')
+        return True
+
+    return 1 == len(detected_cart)
 
 
 
@@ -211,7 +251,9 @@ def solve_problem(input_filename):
 
 # solve_problem('input_sample0.txt')
 
-solve_problem('input_sample1.txt')
+# solve_problem('input_sample1.txt')
+
+solve_problem('input_scenario0.txt')
 
 # solve_problem('input.txt')
 

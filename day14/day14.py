@@ -26,36 +26,59 @@ def display(scoreboard_and_elves):
             print(f' {val} ', end = '')
     print()
 
-def modify_scoreboard(input_number):
+def expand_scoreboard__first_part(input_number):
     while len(scoreboard_and_elves[0]) < (10 + input_number):
-
-        # scoreboard_and_elves[0].append(0)
         calc_sum = scoreboard_and_elves[0][scoreboard_and_elves[1]]  + scoreboard_and_elves[0][scoreboard_and_elves[2]]
         tens_digit = (calc_sum) // 10
         ones_digit = calc_sum % 10
+
         if tens_digit > 0:
             scoreboard_and_elves[0].append(tens_digit)
         scoreboard_and_elves[0].append(ones_digit)
+
         scoreboard_and_elves[1] += 1 + scoreboard_and_elves[0][scoreboard_and_elves[1]]
         scoreboard_and_elves[2] += 1 + scoreboard_and_elves[0][scoreboard_and_elves[2]]
         scoreboard_and_elves[1] %= len(scoreboard_and_elves[0])
         scoreboard_and_elves[2] %= len(scoreboard_and_elves[0])
+
         if DEBUG:
             display(scoreboard_and_elves)
-    dummy = 123
 
 
-def get_last_ten_scores(input_number):
+def get_first_answer(smallest_index_to_report):
     ret_val = ''
-    for i in range(input_number, input_number + 10):
+    for i in range(smallest_index_to_report, smallest_index_to_report + 10):
         ret_val += str(scoreboard_and_elves[0][i])
     return ret_val
 
 
+def get_second_answer(input_number):
+    list_digits_to_match = list(map(lambda x:int(x) ,str(input_number)))
+    scoreboard_index = 0
+    while True:
+        # Evaluating if scoreboard values starting with scoreboard_index match list_digits_to_match
+        for match_index in range(len(list_digits_to_match)):
+            if scoreboard_and_elves[0][scoreboard_index + match_index] != list_digits_to_match[match_index]:
+                # Match not yet found
+                break
+            if match_index == len(list_digits_to_match) - 1:
+                # A match has been found
+                return
+        scoreboard_index += 1
+        # 
+        if scoreboard_index + len(list_digits_to_match) >= len(scoreboard_and_elves[0]):
+            dummy = 123
+            pass
+            # call expand_scoreboard__first_part()  with appropriate parameter, try 100 + scoreboard_index
+
+
+
 def solve_problem(input_filename):
     input_number = get_input_number(input_filename)
-    modify_scoreboard(input_number)
-    print(f'\nThe solution to part A is: {get_last_ten_scores(input_number)}\n')
 
+    expand_scoreboard__first_part(input_number)
+    print(f'\nThe solution to part 1/A is: {get_first_answer(input_number)}\n')
 
-solve_problem('input.txt')
+    print(f'\nThe solution to part 2/B is: {get_second_answer(input_number)}\n')
+
+solve_problem('input_sample4.txt')

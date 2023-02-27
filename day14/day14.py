@@ -7,13 +7,13 @@ DEBUG = False
 scoreboard_and_elves = [[3, 7], 0, 1]
 
 
-def get_input_number(input_filename):
+def get_input_string(input_filename):
     print(f'\nUsing input file: {input_filename}')
     with open(input_filename) as f:
         in_string = f.readline().rstrip()
     print(f'The input is: {in_string}', end = '')
     print()
-    return int(in_string)
+    return in_string
 
 
 def display(scoreboard_and_elves):
@@ -26,8 +26,9 @@ def display(scoreboard_and_elves):
             print(f' {val} ', end = '')
     print()
 
-def expand_scoreboard__first_part(input_number):
-    while len(scoreboard_and_elves[0]) < (10 + input_number):
+def expand_scoreboard__first_part(input_string):
+    input_number = int(input_string)
+    while len(scoreboard_and_elves[0]) < (10 + int(input_number)):
         calc_sum = scoreboard_and_elves[0][scoreboard_and_elves[1]]  + scoreboard_and_elves[0][scoreboard_and_elves[2]]
         tens_digit = (calc_sum) // 10
         ones_digit = calc_sum % 10
@@ -45,15 +46,16 @@ def expand_scoreboard__first_part(input_number):
             display(scoreboard_and_elves)
 
 
-def get_first_answer(smallest_index_to_report):
+def get_first_answer(smallest_index_to_report_str):
     ret_val = ''
-    for i in range(smallest_index_to_report, smallest_index_to_report + 10):
+    smallest_index_to_report_int = int(smallest_index_to_report_str)
+    for i in range(smallest_index_to_report_int, smallest_index_to_report_int + 10):
         ret_val += str(scoreboard_and_elves[0][i])
     return ret_val
 
 
-def get_second_answer(input_number):
-    list_digits_to_match = list(map(lambda x:int(x) ,str(input_number)))
+def get_second_answer(input_string):
+    list_digits_to_match = list(map(lambda x:int(x) , input_string))
     scoreboard_index = 0
     while True:
         # Evaluating if scoreboard values starting with scoreboard_index match list_digits_to_match
@@ -63,7 +65,7 @@ def get_second_answer(input_number):
                 break
             if match_index == len(list_digits_to_match) - 1:
                 # A match has been found
-                return
+                return scoreboard_index
         scoreboard_index += 1
         # 
         if scoreboard_index + len(list_digits_to_match) >= len(scoreboard_and_elves[0]):
@@ -74,11 +76,11 @@ def get_second_answer(input_number):
 
 
 def solve_problem(input_filename):
-    input_number = get_input_number(input_filename)
+    input_string = get_input_string(input_filename)
 
-    expand_scoreboard__first_part(input_number)
-    print(f'\nThe solution to part 1/A is: {get_first_answer(input_number)}\n')
+    expand_scoreboard__first_part(input_string)
+    print(f'\nThe solution to part 1/A is: {get_first_answer(input_string)}\n')
 
-    print(f'\nThe solution to part 2/B is: {get_second_answer(input_number)}\n')
+    print(f'\nThe solution to part 2/B is: {get_second_answer(input_string)}\n')
 
-solve_problem('input_sample4.txt')
+solve_problem('input.txt')

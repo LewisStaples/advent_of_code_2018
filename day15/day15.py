@@ -4,6 +4,8 @@
 # https://adventofcode.com/2018/day/15
 
 
+TESTING = True
+
 def get_initial_state(input_filename):
     '''
     This reads the input file and returns a dict that describes the initial state
@@ -60,10 +62,27 @@ def do_a_round(current_state):
     # CHANGE THE BELOW False, when ready to do so
     return current_state, False
 
+def display(current_state):
+    for row_number in range(current_state['NUM_ROWS']):
+        for col_number in range(current_state['NUM_COLS']):
+            position = col_number + row_number * 1j
+            if position not in current_state:
+                print('#', end = '')
+            else:
+                if type(current_state[position]) == list:
+                    print(current_state[position][0], end = '')
+                else:
+                    print(current_state[position], end = '')
+        print()
+    print()
+
+
 def get_final_state(current_state):
     keep_going = True
     while keep_going:
         current_state, keep_going = do_a_round(current_state)
+        if TESTING:
+            display(current_state)
     return current_state
 
 def solve_problem(input_filename):

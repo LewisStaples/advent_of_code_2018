@@ -6,6 +6,7 @@
 
 TESTING = True
 
+
 def get_initial_state(input_filename):
     '''
     This reads the input file and returns a dict that describes the initial state
@@ -41,26 +42,65 @@ def get_initial_state(input_filename):
     print()
     return initial_state
 
+
+def unit_turn(position, current_state):
+    # Identify targets, and their distances
+    current_value = current_state[position]
+    this_unit = current_value[0]
+    target_unit = 'G' if this_unit == 'E' else 'E'
+
+    # Should find all items in current state for 'G' and for 'E' only once outside this function call, so it isn't repeated and therefore slowing down program execution.
+    
+    # Code for when there are no targets left
+    return None, None
+
+    # If any targets are in range, attack (one of them) it
+
+    # Otherwise take a step towards (one of) the nearest target(s)
+
+
 def do_a_round(current_state):
     next_state = dict()
+
+    next_state['NUM_COLS'] = current_state['NUM_COLS']
+    next_state['NUM_ROWS'] = current_state['NUM_ROWS']
+    next_state['ROUND_NUMBER'] = current_state['ROUND_NUMBER']
+    
     for row_number in range(current_state['NUM_ROWS']):
         for col_number in range(current_state['NUM_COLS']):
-            k = col_number + row_number * 1j
-            if k not in current_state:
+            position = col_number + row_number * 1j
+            if position not in current_state:
                 continue
-            v = current_state[k]
-            if k == 'ROUND_NUMBER':
-                next_state[k] = current_state[k] + 1
-            elif k in ['NUM_COLS', 'NUM_ROWS']:
-                next_state[k] = current_state[k]
-            elif v == '.':
+            current_value = current_state[position]
+            # if position == 'ROUND_NUMBER':
+            #     next_state[position] = current_state[position] + 1
+            # elif position in ['NUM_COLS', 'NUM_ROWS']:
+            #     next_state[position] = current_state[position]
+            if current_value == '.':
                 continue
             else:
-                pass
+                target_position, target_endstate = unit_turn(position, current_state)
+                if target_position is None:
+                    # This round is incomplete
+
+
+
+
+
+                    return next_state, False
+                next_state[target_position] = target_endstate
+
+                # pass
+
                 # FILL_IN_HERE___PROCESS_THAT_UNIT
-        
-    # CHANGE THE BELOW False, when ready to do so
+    
+    # If complete
+    # next_state['NUM_COLS'] = current_state['NUM_COLS']
+    # next_state['NUM_ROWS'] = current_state['NUM_ROWS']
+    next_state['ROUND_NUMBER'] += 1
+    # CHANGE THE BELOW False to True, when ready to do so
     return current_state, False
+
 
 def display(current_state):
     for row_number in range(current_state['NUM_ROWS']):
@@ -81,13 +121,15 @@ def get_final_state(current_state):
     keep_going = True
     while keep_going:
         current_state, keep_going = do_a_round(current_state)
-        if TESTING:
+        if TESTING and keep_going:
             display(current_state)
     return current_state
+
 
 def solve_problem(input_filename):
     initial_state = get_initial_state(input_filename)
     final_state = get_final_state(initial_state)
+
 
 solve_problem('input_sample0.txt')
 

@@ -7,6 +7,7 @@
 TESTING = True
 
 
+
 def get_initial_state(input_filename):
     '''
     This reads the input file and returns a dict that describes the initial state
@@ -43,20 +44,60 @@ def get_initial_state(input_filename):
     return initial_state
 
 
-def unit_turn(position, current_state):
-    # Identify targets, and their distances
-    current_value = current_state[position]
-    this_unit = current_value[0]
-    target_unit = 'G' if this_unit == 'E' else 'E'
+def get_adjacent_squares(target_locations, current_state):
+    adjacent_squares = set()
+    for target_location in target_locations:
+        for one_step in [1, -1, -1j,1j]:
+            adjacent_squares.add(target_location + one_step)
+    return adjacent_squares
 
-    # Should find all items in current state for 'G' and for 'E' only once outside this function call, so it isn't repeated and therefore slowing down program execution.
-    
-    # Code for when there are no targets left
+
+# def unit_turn(position, current_state):
+def unit_turn(position, target_char, all_units, current_state):
+    '''
+    This function returns target_position, target_endstate
+    '''
+    # Final state has been reached if there are no targets left
+    if len(all_units[target_char]) == 0:
+        return None, None
+
+    adj_open_sq_locations = dict()
+    adj_attackable_targets = list()
+
+    # Consider all squares adjacent to a target
+    for the_location in get_adjacent_squares(all_units[target_char], current_state):
+        if the_location not in current_state:
+            continue
+        elif current_state[the_location] == '.':
+            # It's an adjacent open square, so mark its location
+            adj_open_sq_locations[the_location] = None
+        elif current_state[the_location][0] == target_char:
+            # It's a target that is adjacent to the attacking unit
+            adj_attackable_targets.append(the_location)
+
+            
+
+    dummy = 123
+
+
+    # Identify all targets in range of this unit
+    # Identify all open squares in range of a target
+
+    # If any targets are in range, then attack one of them
+    # Otherwise take a step towards (one of) the nearest target(s)
+
+    # return target_position, target_endstate
     return None, None
 
-    # If any targets are in range, attack (one of them) it
 
-    # Otherwise take a step towards (one of) the nearest target(s)
+def get_all_units(current_state):
+    all_units = {'E': list(), 'G': list(), '.': list()}
+    for k,v in current_state.items():
+        if type(v) == list:
+            all_units[v[0]].append(k)
+        elif v == '.':
+            all_units[v].append(k)
+    return all_units
 
 
 def do_a_round(current_state):
@@ -66,20 +107,33 @@ def do_a_round(current_state):
     next_state['NUM_ROWS'] = current_state['NUM_ROWS']
     next_state['ROUND_NUMBER'] = current_state['ROUND_NUMBER']
     
+    all_units = get_all_units(current_state)
+
     for row_number in range(current_state['NUM_ROWS']):
         for col_number in range(current_state['NUM_COLS']):
             position = col_number + row_number * 1j
             if position not in current_state:
                 continue
             current_value = current_state[position]
-            # if position == 'ROUND_NUMBER':
-            #     next_state[position] = current_state[position] + 1
-            # elif position in ['NUM_COLS', 'NUM_ROWS']:
-            #     next_state[position] = current_state[position]
+
             if current_value == '.':
                 continue
             else:
-                target_position, target_endstate = unit_turn(position, current_state)
+
+
+                # Identify targets, and their distances
+                current_value = current_state[position]
+                target_unit = current_value[0]
+                target_char = 'G' if target_unit == 'E' else 'E'
+
+
+                # target_position, target_endstate = unit_turn(position, current_state)
+                # There are four possible outcomes:  
+                # (1) a target was attacked, 
+                # (2) the current unit was moved
+                # (3) nothing happened
+                # (4) all movement is complete, because there are no targets left
+                target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
                 if target_position is None:
                     # This round is incomplete
 

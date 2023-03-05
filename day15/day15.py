@@ -4,6 +4,20 @@
 # https://adventofcode.com/2018/day/15
 
 
+# There are five possible outcomes when a particular unit takes its turn:  
+# (1) a target was attacked but not killed, 
+# (2) a target was attacked and killed off, 
+# (3) the current unit was moved
+# (4) nothing happened
+# (5) there are no targets left
+import enum
+class UnitTurnOutcome(enum.Enum):
+    TARGET_ATTACKED_ALIVE = 2
+    TARGET_KILLED = 2
+    CURRENT_UNIT_MOVED = 3
+    NOTHING_HAPPENED = 4
+    NO_TARGETS_LEFT = 5
+
 TESTING = True
 
 
@@ -59,7 +73,7 @@ def unit_turn(position, target_char, all_units, current_state):
     '''
     # Final state has been reached if there are no targets left
     if len(all_units[target_char]) == 0:
-        return None, None
+        return UnitTurnOutcome.NO_TARGETS_LEFT, None, None
 
     adj_open_sq_locations = dict()
     adj_attackable_targets = list()
@@ -87,7 +101,7 @@ def unit_turn(position, target_char, all_units, current_state):
     # Otherwise take a step towards (one of) the nearest target(s)
 
     # return target_position, target_endstate
-    return None, None
+    # return UnitTurnOutcome.,None, None
 
 
 def get_all_units(current_state):
@@ -128,21 +142,26 @@ def do_a_round(current_state):
 
 
                 # target_position, target_endstate = unit_turn(position, current_state)
-                # There are four possible outcomes:  
-                # (1) a target was attacked, 
-                # (2) the current unit was moved
-                # (3) nothing happened
-                # (4) all movement is complete, because there are no targets left
-                target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
-                if target_position is None:
-                    # This round is incomplete
+                # There are five possible outcomes:  
+                # (1) a target was attacked but not killed, 
+                # (2) a target was attacked and killed off, 
+                # (3) the current unit was moved
+                # (4) nothing happened
+                # (5) there are no targets left
 
+                # target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
+                unit_flag_outcome_flag, param1, param2 = unit_turn(position, target_char, all_units, current_state)
 
-
-
-
+                # if target_position is None:
+                if unit_flag_outcome_flag == UnitTurnOutcome.NO_TARGETS_LEFT:
+                    # Covers outcome 5:  there are no targets left
                     return next_state, False
-                next_state[target_position] = target_endstate
+                
+                # Covers outcome 1:  target attacked and its state changed
+                # (It can also cover outcome 4, if the ending state is identical to the starting state)
+                # next_state[target_position] = target_endstate
+                if unit_flag_outcome_flag in [UnitTurnOutcome.TARGET_KILLED, UnitTurnOutcome.TARGET_ATTACKED_ALIVE, UnitTurnOutcome.NOTHING_HAPPENED]:
+                    next_state[param1] = next_state[param2]
 
                 # pass
 

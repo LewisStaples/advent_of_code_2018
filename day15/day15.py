@@ -12,7 +12,7 @@
 # (5) there are no targets left
 import enum
 class UnitTurnOutcome(enum.Enum):
-    TARGET_ATTACKED_ALIVE = 2
+    TARGET_ATTACKED_ALIVE = 1
     TARGET_KILLED = 2
     CURRENT_UNIT_MOVED = 3
     NOTHING_HAPPENED = 4
@@ -82,26 +82,26 @@ def unit_turn(position, target_char, all_units, current_state):
     for the_location in get_adjacent_squares(all_units[target_char], current_state):
         if the_location not in current_state:
             continue
+        
         elif current_state[the_location] == '.':
-            # It's an adjacent open square, so mark its location
+            # Since it's an adjacent open square, look up its length later
             adj_open_sq_locations[the_location] = None
         elif current_state[the_location][0] == target_char:
             # It's a target that is adjacent to the attacking unit
             adj_attackable_targets.append(the_location)
 
-            
-
-    dummy = 123
-
-
-    # Identify all targets in range of this unit
-    # Identify all open squares in range of a target
-
-    # If any targets are in range, then attack one of them
-    # Otherwise take a step towards (one of) the nearest target(s)
-
-    # return target_position, target_endstate
-    # return UnitTurnOutcome.,None, None
+    if len(adj_attackable_targets) > 0:
+        # Attacks a target (if > 1, it's chosen based on reading order)
+        pass
+        # return
+    elif len(adj_open_sq_locations) > 0:
+        # Determine which adj_open_sq_locations (if any) are closest
+        # If more than one, select based on reading order, and return
+        # If one, select it and return
+        # If zero, keep going
+        pass
+        # return
+    return UnitTurnOutcome.NOTHING_HAPPENED, None, None
 
 
 def get_all_units(current_state):
@@ -152,18 +152,26 @@ def do_a_round(current_state):
                 # target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
                 unit_flag_outcome_flag, param1, param2 = unit_turn(position, target_char, all_units, current_state)
 
-                # if target_position is None:
+                # Covers outcome 5:  there are no targets left
                 if unit_flag_outcome_flag == UnitTurnOutcome.NO_TARGETS_LEFT:
-                    # Covers outcome 5:  there are no targets left
                     return next_state, False
                 
-                # Covers outcome 1:  target attacked and its state changed
-                # (It can also cover outcome 4, if the ending state is identical to the starting state)
-                # next_state[target_position] = target_endstate
-                if unit_flag_outcome_flag in [UnitTurnOutcome.TARGET_KILLED, UnitTurnOutcome.TARGET_ATTACKED_ALIVE, UnitTurnOutcome.NOTHING_HAPPENED]:
-                    next_state[param1] = next_state[param2]
+                # Covers outcome 4:  nothing happened
+                elif unit_flag_outcome_flag == UnitTurnOutcome.NOTHING_HAPPENED:
+                    pass
 
-                # pass
+                # Covers outcome 1:  target attacked and its state changed
+                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
+                    next_state[param1] = next_state[param2]
+                # Covers outcome 2:  target attacked and killed off
+                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
+                    # Remove the target .... it's now an open square
+                    next_state[param1] = '.'
+                
+                # Covers outcome 3:  the current unit is moved
+                else:
+                    next_state[param2] = next_state[param1]
+                    next_state[param1] = '.'
 
                 # FILL_IN_HERE___PROCESS_THAT_UNIT
     

@@ -58,12 +58,23 @@ def get_initial_state(input_filename):
     return initial_state
 
 
-def get_adjacent_squares(target_locations, current_state):
+def get_adjacent_squares(target_locations):
     adjacent_squares = set()
     for target_location in target_locations:
         for one_step in [1, -1, -1j,1j]:
             adjacent_squares.add(target_location + one_step)
     return adjacent_squares
+
+
+def first__reading_order(position_iterable):
+
+    # Initially consider the 0-th element to be the first in "reading order"
+    ret_val = position_iterable[0]
+    
+    # Then compare the value of each remaining element to ret_val.
+    # Reassign ret_val to the newly checked element if its reading order comes ahead of it
+    print('NEED TO FIX READING ORDER !!!')
+    return ret_val
 
 
 # def unit_turn(position, current_state):
@@ -73,26 +84,39 @@ def unit_turn(position, target_char, all_units, current_state):
     '''
     # Final state has been reached if there are no targets left
     if len(all_units[target_char]) == 0:
+        # Outcome # 5 there are no targets left
         return UnitTurnOutcome.NO_TARGETS_LEFT, None, None
 
     adj_open_sq_locations = dict()
     adj_attackable_targets = list()
 
-    # Consider all squares adjacent to a target
-    for the_location in get_adjacent_squares(all_units[target_char], current_state):
+    # Consider all squares adjacent to any of the targets
+    for the_location in get_adjacent_squares(all_units[target_char]):
         if the_location not in current_state:
             continue
-        
         elif current_state[the_location] == '.':
             # Since it's an adjacent open square, look up its length later
             adj_open_sq_locations[the_location] = None
-        elif current_state[the_location][0] == target_char:
-            # It's a target that is adjacent to the attacking unit
-            adj_attackable_targets.append(the_location)
+
+    # See if any adjacent square to position is a target
+    for adjacent_location in get_adjacent_squares([position]):
+        # elif current_state[the_location][0] == target_char:
+        #     # It's a target that is adjacent to the attacking unit
+        if adjacent_location not in current_state:
+            continue
+        if current_state[adjacent_location] == '.':
+            continue
+        if current_state[adjacent_location][0] == target_char:
+            adj_attackable_targets.append(adjacent_location)
 
     if len(adj_attackable_targets) > 0:
+
         # Attacks a target (if > 1, it's chosen based on reading order)
-        pass
+        position_target = first__reading_order(adj_attackable_targets)
+        
+        # Need to implement attacking logic
+        dummy = 123
+        
         # return
     elif len(adj_open_sq_locations) > 0:
         # Determine which adj_open_sq_locations (if any) are closest
@@ -101,6 +125,7 @@ def unit_turn(position, target_char, all_units, current_state):
         # If zero, keep going
         pass
         # return
+    # Outcome 4: nothing happened
     return UnitTurnOutcome.NOTHING_HAPPENED, None, None
 
 

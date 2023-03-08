@@ -10,6 +10,9 @@
 # (3) the current unit was moved
 # (4) nothing happened
 # (5) there are no targets left
+
+# import numpy as np
+
 import enum
 class UnitTurnOutcome(enum.Enum):
     TARGET_ATTACKED_ALIVE = 1
@@ -73,7 +76,12 @@ def first__reading_order(position_iterable):
     
     # Then compare the value of each remaining element to ret_val.
     # Reassign ret_val to the newly checked element if its reading order comes ahead of it
-    print('NEED TO FIX READING ORDER !!!')
+    for i in range(1, len(position_iterable)):
+        if position_iterable[i].real < ret_val.real:
+            ret_val = position_iterable[i]
+        elif position_iterable[i].imag < ret_val.imag:
+            ret_val = position_iterable[i]
+
     return ret_val
 
 
@@ -239,3 +247,6 @@ def solve_problem(input_filename):
 
 solve_problem('input_sample0.txt')
 
+def test_first__reading_order():
+    assert first__reading_order([3+2j, 3+3j, 4+2j, 4+3j]) == 3+2j
+    assert first__reading_order([3+3j, 4+2j, 4+3j, 3+2j ]) == 3+2j

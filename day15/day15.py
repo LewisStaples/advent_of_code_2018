@@ -52,7 +52,8 @@ def get_initial_state(input_filename):
                 elif ch == '.':
                     initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = '.'
                 else:
-                    initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = [ch, 200]
+                    # initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = [ch, 200]
+                    initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = {'char': ch, 'hit_points': 200, 'attack_power': 3}
 
         
         initial_state['NUM_COLS'] = len(in_string) - 2
@@ -86,7 +87,7 @@ def first__reading_order(position_iterable):
 
 
 # def unit_turn(position, current_state):
-def unit_turn(position, target_char, all_units, current_state):
+def unit_turn(position_player, target_char, all_units, current_state):
     '''
     This function returns target_position, target_endstate
     '''
@@ -107,24 +108,43 @@ def unit_turn(position, target_char, all_units, current_state):
             adj_open_sq_locations[the_location] = None
 
     # See if any adjacent square to position is a target
-    for adjacent_location in get_adjacent_squares([position]):
+    for adjacent_location in get_adjacent_squares([position_player]):
         # elif current_state[the_location][0] == target_char:
         #     # It's a target that is adjacent to the attacking unit
         if adjacent_location not in current_state:
             continue
         if current_state[adjacent_location] == '.':
             continue
-        if current_state[adjacent_location][0] == target_char:
+        # if current_state[adjacent_location][0] == target_char:
+        if current_state[adjacent_location]['char'] == target_char:
             adj_attackable_targets.append(adjacent_location)
 
     if len(adj_attackable_targets) > 0:
-
         # Attacks a target (if > 1, it's chosen based on reading order)
         position_target = first__reading_order(adj_attackable_targets)
+        target_new_hp = current_state[position_target]['hit_points'] - current_state[position_player]['attack_power']
+        if target_new_hp > 0:
+            # Outcome # 1:  target attacked and remains alive
+            return UnitTurnOutcome.TARGET_ATTACKED_ALIVE, position_target, {'char': target_char, 'hit_points': target_new_hp, 'attack_power': current_state[position_target]['attack_power']}
+        else:
+            # Outcome # 2:  target attacked and killed off
+            return UnitTurnOutcome.TARGET_KILLED, position_target, '.'
         
-        # Need to implement attacking logic
         dummy = 123
-        
+
+
+
+                # # Covers outcome 1:  target attacked and its state changed
+                # elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
+                #     next_state[param1] = next_state[param2]
+                # # Covers outcome 2:  target attacked and killed off
+                # elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
+                #     # Remove the target .... it's now an open square
+                #     next_state[param1] = '.'
+
+
+
+
         # return
     elif len(adj_open_sq_locations) > 0:
         # Determine which adj_open_sq_locations (if any) are closest
@@ -133,15 +153,16 @@ def unit_turn(position, target_char, all_units, current_state):
         # If zero, keep going
         pass
         # return
-    # Outcome 4: nothing happened
+
+    # Outcome # 4: nothing happened
     return UnitTurnOutcome.NOTHING_HAPPENED, None, None
 
 
 def get_all_units(current_state):
     all_units = {'E': list(), 'G': list(), '.': list()}
     for k,v in current_state.items():
-        if type(v) == list:
-            all_units[v[0]].append(k)
+        if type(v) == dict:
+            all_units[v['char']].append(k)
         elif v == '.':
             all_units[v].append(k)
     return all_units
@@ -170,7 +191,8 @@ def do_a_round(current_state):
 
                 # Identify targets, and their distances
                 current_value = current_state[position]
-                target_unit = current_value[0]
+                # target_unit = current_value[0]
+                target_unit = current_value['char']
                 target_char = 'G' if target_unit == 'E' else 'E'
 
 
@@ -195,9 +217,9 @@ def do_a_round(current_state):
 
                 # Covers outcome 1:  target attacked and its state changed
                 elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
-                    next_state[param1] = next_state[param2]
+                    next_state[param1] = param2
                 # Covers outcome 2:  target attacked and killed off
-                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
+                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
                     # Remove the target .... it's now an open square
                     next_state[param1] = '.'
                 
@@ -223,8 +245,10 @@ def display(current_state):
             if position not in current_state:
                 print('#', end = '')
             else:
-                if type(current_state[position]) == list:
-                    print(current_state[position][0], end = '')
+                # if type(current_state[position]) == list:
+                if type(current_state[position]) == dict:
+                    # print(current_state[position][0], end = '')
+                    print(current_state[position]['char'], end = '')
                 else:
                     print(current_state[position], end = '')
         print()

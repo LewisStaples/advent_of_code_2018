@@ -130,32 +130,45 @@ def unit_turn(position_player, target_char, all_units, current_state):
             # Outcome # 2:  target attacked and killed off
             return UnitTurnOutcome.TARGET_KILLED, position_target, '.'
         
-        dummy = 123
-
-
-
-                # # Covers outcome 1:  target attacked and its state changed
-                # elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
-                #     next_state[param1] = next_state[param2]
-                # # Covers outcome 2:  target attacked and killed off
-                # elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
-                #     # Remove the target .... it's now an open square
-                #     next_state[param1] = '.'
-
-
-
-
-        # return
+   
     elif len(adj_open_sq_locations) > 0:
-        # Determine which adj_open_sq_locations (if any) are closest
+        # Determine which reachable adj_open_sq_locations (if any) are closest
         # If more than one, select based on reading order, and return
         # If one, select it and return
         # If zero, keep going
-        pass
-        # return
 
-    # Outcome # 4: nothing happened
-    return UnitTurnOutcome.NOTHING_HAPPENED, None, None
+        # 
+        next_positions = {position_player}
+        prior_positions = set()
+        current_positions = set()
+        step_count = 0
+        nearest_open_squares =  set()
+        while True:
+            step_count += 1
+            prior_positions.update(current_positions)
+            current_positions = next_positions
+            # Get all four adjacent squares
+            next_positions = get_adjacent_squares(next_positions)
+            # Eliminate all adjacent squares that have been visited previously
+            next_positions = next_positions.difference(current_positions).difference(prior_positions)
+            # Disregard either '#' or the other unit type
+            next_positions = {
+                x
+                for x in next_positions
+                if x in current_state  # exclude '#'
+                and current_state[x] == '.'  # include only open spaces
+            }
+
+            if len(next_positions) == 0:
+                # Outcome # 4: nothing happened
+                return UnitTurnOutcome.NOTHING_HAPPENED, None, None
+        
+            # If any next_positions intersect with the known adjacent open square locations
+            intersection_set = set(adj_open_sq_locations.keys()).intersection(next_positions)
+            if len(intersection_set) > 0:
+                pass
+                # REALLY .... TAKE A STEP IN THAT DIRECTION .... Outcome # 3
+
 
 
 def get_all_units(current_state):

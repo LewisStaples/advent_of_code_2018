@@ -11,7 +11,6 @@
 # (4) nothing happened
 # (5) there are no targets left
 
-# import numpy as np
 
 import enum
 class UnitTurnOutcome(enum.Enum):
@@ -39,7 +38,7 @@ def get_initial_state(input_filename):
     initial_state = {'ROUND_NUMBER':0}
 
     # Reading input from the input file
-    print(f'\nUsing input file: {input_filename}')
+    print(f'\nORIGINAL INPUT (from {input_filename}):')
     with open(input_filename) as f:
         # Pull in each line from the input file
         for input_row_number, in_string in enumerate(f):
@@ -47,16 +46,11 @@ def get_initial_state(input_filename):
             if len(in_string) < 15:
                 print(in_string)
             for input_col_number, ch in enumerate(in_string):
-                # if ch == '#':
-                #     continue
-                # elif ch == '.':
-                #     initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = '.'
                 if ch == '.':
                     continue
                 elif ch == '#':
                     initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = '#'
                 else:
-                    # initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = [ch, 200]
                     initial_state[(input_col_number - 1) + (input_row_number - 1) * 1j] = {'char': ch, 'hit_points': 200, 'attack_power': 3}
 
         
@@ -87,7 +81,6 @@ def first__reading_order(position_iterable):
     return ret_val
 
 
-
 def unit_turn(position_player, target_char, all_units, current_state):
     '''
     This function returns target_position, target_endstate
@@ -102,13 +95,6 @@ def unit_turn(position_player, target_char, all_units, current_state):
 
     # Consider all squares adjacent to any of the targets
     for the_location in get_adjacent_squares(all_units[target_char]):
-
-        # if the_location not in current_state:
-        #     continue
-        # elif current_state[the_location] == '.':
-        #     # Since it's an adjacent open square, look up its length later
-        #     adj_open_sq_locations[the_location] = None
-
         if the_location not in current_state:
             # Since it's an adjacent open square, look up its length later
             adj_open_sq_locations[the_location] = None
@@ -118,14 +104,11 @@ def unit_turn(position_player, target_char, all_units, current_state):
 
     # See if any adjacent square to position is a target
     for adjacent_location in get_adjacent_squares([position_player]):
-        # elif current_state[the_location][0] == target_char:
         #     # It's a target that is adjacent to the attacking unit
         if adjacent_location not in current_state:
             continue
-        # if current_state[adjacent_location] == '.':
         if current_state[adjacent_location] == '#':
             continue
-        # if current_state[adjacent_location][0] == target_char:
         if current_state[adjacent_location]['char'] == target_char:
             adj_attackable_targets.append(adjacent_location)
 
@@ -138,7 +121,6 @@ def unit_turn(position_player, target_char, all_units, current_state):
             return UnitTurnOutcome.TARGET_ATTACKED_ALIVE, position_target, {'char': target_char, 'hit_points': target_new_hp, 'attack_power': current_state[position_target]['attack_power']}
         else:
             # Outcome # 2:  target attacked and killed off
-            # return UnitTurnOutcome.TARGET_KILLED, position_target, '.'
             return UnitTurnOutcome.TARGET_KILLED, position_target
         
    
@@ -153,7 +135,6 @@ def unit_turn(position_player, target_char, all_units, current_state):
         prior_positions = set()
         current_positions = set()
         step_count = 0
-        nearest_open_squares =  set()
         while True:
             step_count += 1
             prior_positions.update(current_positions)
@@ -162,13 +143,6 @@ def unit_turn(position_player, target_char, all_units, current_state):
             next_positions = get_adjacent_squares(next_positions)
             # Eliminate all adjacent squares that have been visited previously
             next_positions = next_positions.difference(current_positions).difference(prior_positions)
-            ### Disregard either '#' or the other unit type
-            # next_positions = {
-            #     x
-            #     for x in next_positions
-            #     if x in current_state  # exclude '#'
-            #     and current_state[x] == '.'  # include only open spaces
-            # }
 
             # Only consider open squares (positions not in current_state)
             next_positions = {
@@ -184,34 +158,21 @@ def unit_turn(position_player, target_char, all_units, current_state):
             # If any next_positions intersect with the known adjacent open square locations
             intersection_set = set(adj_open_sq_locations.keys()).intersection(next_positions)
             if len(intersection_set) > 0:
-                pass
-                
                 return UnitTurnOutcome.CURRENT_UNIT_MOVED, position_player, first__reading_order(list(intersection_set))
-                # REALLY .... TAKE A STEP IN THAT DIRECTION .... Outcome # 3
-
-# first__reading_order(position_iterable)
-
 
 
 def get_all_units(current_state):
-    # all_units = {'E': list(), 'G': list(), '.': list()}
     all_units = {'E': list(), 'G': list(), '#': list()}
     for k,v in current_state.items():
         if type(v) == dict:
             all_units[v['char']].append(k)
-        # elif v == '.':
         elif v == '#':
             all_units[v].append(k)
     return all_units
 
 
 def do_a_round(current_state):
-    next_state = dict()
-
-    next_state['NUM_COLS'] = current_state['NUM_COLS']
-    next_state['NUM_ROWS'] = current_state['NUM_ROWS']
-    next_state['ROUND_NUMBER'] = current_state['ROUND_NUMBER']
-    
+    current_state['ROUND_NUMBER'] += 1
     all_units = get_all_units(current_state)
 
     for row_number in range(current_state['NUM_ROWS']):
@@ -220,7 +181,6 @@ def do_a_round(current_state):
             if position not in current_state:
                 continue
             current_value = current_state[position]
-            # if current_value == '.':
             if current_value == '#':
                 continue
 
@@ -230,7 +190,6 @@ def do_a_round(current_state):
 
                 # Identify targets, and their distances
                 current_value = current_state[position]
-                # target_unit = current_value[0]
                 target_unit = current_value['char']
                 target_char = 'G' if target_unit == 'E' else 'E'
 
@@ -248,38 +207,41 @@ def do_a_round(current_state):
 
                 # Covers outcome 5:  there are no targets left
                 if unit_flag_outcome_flag == UnitTurnOutcome.NO_TARGETS_LEFT:
-                    return next_state, False
-                
+                    return current_state, False
                 # Covers outcome 4:  nothing happened
                 elif unit_flag_outcome_flag == UnitTurnOutcome.NOTHING_HAPPENED:
                     pass
-
                 # Covers outcome 1:  target attacked and its state changed
                 elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
-                    next_state[param1] = param2
+                    current_state[param1] = param2
                 # Covers outcome 2:  target attacked and killed off
                 elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
-                    # Remove the target .... it's now an open square
-                    # next_state[param1] = '.'
-                    next_state.pop(param1)
-                
+                    current_state.pop(param1)
                 # Covers outcome 3:  the current unit is moved
                 else:
-                    next_state[param2] = current_state[param1]
-                    # next_state[param1] = '.'
-                    # next_state.pop(param1)
+                    assert unit_flag_outcome_flag == UnitTurnOutcome.CURRENT_UNIT_MOVED
+                    current_state[param2] = current_state[param1]
+                    current_state.pop(param1)
 
-                # FILL_IN_HERE___PROCESS_THAT_UNIT
+
+    # For tests, limit the number of rounds that can be run
+    # (it will normally stop with flag UnitTurnOutcome.NO_TARGETS_LEFT)
+    if TESTING:
+        if current_state['ROUND_NUMBER'] < 10:
+            return current_state, True
+        return current_state, False
     
-    # If complete
-    # next_state['NUM_COLS'] = current_state['NUM_COLS']
-    # next_state['NUM_ROWS'] = current_state['NUM_ROWS']
-    next_state['ROUND_NUMBER'] += 1
-    # CHANGE THE BELOW False to True, when ready to do so
-    return next_state, False
+    # Continue running the next round 
+    # (because it will normally stop with flag UnitTurnOutcome.NO_TARGETS_LEFT)
+    return current_state, True
 
 
 def display(current_state):
+    # Use this to choose which rounds will be displayed
+    if current_state["ROUND_NUMBER"] not in [1,2,7]:
+        return
+    
+    print(f'ROUND # {current_state["ROUND_NUMBER"]}')
     print('#' * (current_state['NUM_COLS'] + 2))
     for row_number in range(current_state['NUM_ROWS']):
         unit_information = ''
@@ -287,20 +249,17 @@ def display(current_state):
         for col_number in range(current_state['NUM_COLS']):
             position = col_number + row_number * 1j
             if position not in current_state:
-                # print('#', end = '')
                 print('.', end = '')
             else:
-                # if type(current_state[position]) == list:
                 if type(current_state[position]) == dict:
-                    # print(current_state[position][0], end = '')
                     print(current_state[position]['char'], end = '')
-                    # unit_information += current_state[position]['char']
                     unit_information += f"{current_state[position]['char']}({current_state[position]['hit_points']}) "
                 else:
                     print(current_state[position], end = '')
         print('#  ', end = '')
         print(unit_information)
     print('#' * (current_state['NUM_COLS'] + 2))
+    print()
 
 
 def get_final_state(current_state):

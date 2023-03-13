@@ -175,6 +175,12 @@ def do_a_round(current_state):
     current_state['ROUND_NUMBER'] += 1
     all_units = get_all_units(current_state)
 
+    unit_positions = [positions for unit, positions in all_units.items() if unit in ['E','G']]
+    unit_positions = [item for row in unit_positions for item in row]
+    # Need to sort unit_positions
+
+    # Then run pop(0) on unit_positions, one at a time and use that to determine which piece to move.
+    # Do not use the nested pair of for loops to loop through the pieces
     for row_number in range(current_state['NUM_ROWS']):
         for col_number in range(current_state['NUM_COLS']):
             position = col_number + row_number * 1j

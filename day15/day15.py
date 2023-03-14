@@ -177,57 +177,55 @@ def do_a_round(current_state):
 
     unit_positions = [positions for unit, positions in all_units.items() if unit in ['E','G']]
     unit_positions = [item for row in unit_positions for item in row]
-    # Need to sort unit_positions
+    unit_positions.sort(key = lambda complex_val: complex_val.real + complex_val.imag * current_state['NUM_COLS'])
 
     # Then run pop(0) on unit_positions, one at a time and use that to determine which piece to move.
     # Do not use the nested pair of for loops to loop through the pieces
-    for row_number in range(current_state['NUM_ROWS']):
-        for col_number in range(current_state['NUM_COLS']):
-            position = col_number + row_number * 1j
-            if position not in current_state:
-                continue
+    # # for row_number in range(current_state['NUM_ROWS']):
+    # #     for col_number in range(current_state['NUM_COLS']):
+    for position in unit_positions:
+        # position = col_number + row_number * 1j
+        if position not in current_state:
+            continue
+        current_value = current_state[position]
+        if current_value == '#':
+            continue
+
+        else:
+            # Identify targets, and their distances
             current_value = current_state[position]
-            if current_value == '#':
-                continue
+            target_unit = current_value['char']
+            target_char = 'G' if target_unit == 'E' else 'E'
 
 
+            # target_position, target_endstate = unit_turn(position, current_state)
+            # There are five possible outcomes:  
+            # (1) a target was attacked but not killed, 
+            # (2) a target was attacked and killed off, 
+            # (3) the current unit was moved
+            # (4) nothing happened
+            # (5) there are no targets left
+
+            # target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
+            unit_flag_outcome_flag, param1, param2 = unit_turn(position, target_char, all_units, current_state)
+
+            # Covers outcome 5:  there are no targets left
+            if unit_flag_outcome_flag == UnitTurnOutcome.NO_TARGETS_LEFT:
+                return current_state, False
+            # Covers outcome 4:  nothing happened
+            elif unit_flag_outcome_flag == UnitTurnOutcome.NOTHING_HAPPENED:
+                pass
+            # Covers outcome 1:  target attacked and its state changed
+            elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
+                current_state[param1] = param2
+            # Covers outcome 2:  target attacked and killed off
+            elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
+                current_state.pop(param1)
+            # Covers outcome 3:  the current unit is moved
             else:
-
-
-                # Identify targets, and their distances
-                current_value = current_state[position]
-                target_unit = current_value['char']
-                target_char = 'G' if target_unit == 'E' else 'E'
-
-
-                # target_position, target_endstate = unit_turn(position, current_state)
-                # There are five possible outcomes:  
-                # (1) a target was attacked but not killed, 
-                # (2) a target was attacked and killed off, 
-                # (3) the current unit was moved
-                # (4) nothing happened
-                # (5) there are no targets left
-
-                # target_position, target_endstate = unit_turn(position, target_char, all_units, current_state)
-                unit_flag_outcome_flag, param1, param2 = unit_turn(position, target_char, all_units, current_state)
-
-                # Covers outcome 5:  there are no targets left
-                if unit_flag_outcome_flag == UnitTurnOutcome.NO_TARGETS_LEFT:
-                    return current_state, False
-                # Covers outcome 4:  nothing happened
-                elif unit_flag_outcome_flag == UnitTurnOutcome.NOTHING_HAPPENED:
-                    pass
-                # Covers outcome 1:  target attacked and its state changed
-                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_ATTACKED_ALIVE:
-                    current_state[param1] = param2
-                # Covers outcome 2:  target attacked and killed off
-                elif unit_flag_outcome_flag == UnitTurnOutcome.TARGET_KILLED:
-                    current_state.pop(param1)
-                # Covers outcome 3:  the current unit is moved
-                else:
-                    assert unit_flag_outcome_flag == UnitTurnOutcome.CURRENT_UNIT_MOVED
-                    current_state[param2] = current_state[param1]
-                    current_state.pop(param1)
+                assert unit_flag_outcome_flag == UnitTurnOutcome.CURRENT_UNIT_MOVED
+                current_state[param2] = current_state[param1]
+                current_state.pop(param1)
 
 
     # For tests, limit the number of rounds that can be run

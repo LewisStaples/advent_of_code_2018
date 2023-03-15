@@ -126,17 +126,22 @@ def unit_turn(position_player, target_char, all_units, current_state):
    
     elif len(adj_open_sq_locations) > 0:
         # Determine which reachable adj_open_sq_locations (if any) are closest
-        # If more than one, select based on reading order, and return
-        # If one, select it and return
-        # If zero, keep going
+        # Then determine which of the four directions can be the first step to reach one of those locations in minimum time.
+        # If there is one than one available first step that leads to that result, choose based on "reading order."
+        #
+        # To do this, maybe substitute the set of positions for a dict with key==positions and value==list of directions that lead to that position
+        # Alternatively, why not have a list/dict/etc. of sets, where each of the four directions has its own set?
+        # Or maybe an alternative data structure would make sense?
+        # 
+        # Decision .... convert the below into a function except the initial contents of next_positions is the input value
+        # Then run this function four times for all four directions from the initial position.
+        # Then the record of which of the four initial moves works is retained.
 
         # 
         next_positions = {position_player}
         prior_positions = set()
         current_positions = set()
-        step_count = 0
         while True:
-            step_count += 1
             prior_positions.update(current_positions)
             current_positions = next_positions
             # Get all four adjacent squares

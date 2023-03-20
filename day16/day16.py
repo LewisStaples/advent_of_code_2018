@@ -21,12 +21,12 @@ def get_number_list(in_string):
     return the_number_list
     
 
-def get_value(register_values, register_number):
-    return register_values[register_number]
+def get_value(instruction_values, instruction_number):
+    return instruction_values[instruction_number]
 
-def get_register(register_values, register_number):
-    the_value = get_value(register_values, register_number)
-    return register_values[the_value]
+def get_register(register_values, instruction_values, instruction_number):
+    register_number = get_value(instruction_values, instruction_number)
+    return register_values[register_number]
 
 
 def add(left_value, right_value):
@@ -35,11 +35,11 @@ def add(left_value, right_value):
 def binary(register_values_initial, register_values_expected_final, instruction_values, opcode_name):
     # Implement logic to strip off the last letter and call function with the remaining letters
     # and use that last letter to determine which parameters will be sent
-    left_value = get_register(register_values_initial, instruction_values[1])
+    left_value = get_register(register_values_initial, instruction_values, 1)
     if opcode_name[-1] == 'r':
-        right_value = get_register(register_values_initial, instruction_values[2])
+        right_value = get_register(register_values_initial, instruction_values, 2)
     else:
-        right_value = get_value(register_values_initial, instruction_values[2])
+        right_value = get_value(instruction_values, 2)
     function_to_call = opcode_name[:-1]
     register_index = instruction_values[3]
     return eval(f'{function_to_call}(left_value,right_value)') == register_values_expected_final[register_index]

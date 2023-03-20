@@ -6,7 +6,7 @@
 TEST = False
 TEST = True
 # Storing the name of each operation, followed by the type of operator:  binary, unary, or conditional
-ALL_OPCODES = {'addr': 'binary', 'addi': 'binary'}
+ALL_OPCODES = {'addr': 'binary', 'addi': 'binary', 'mulr': 'binary', 'muli':'binary'}
 
 def get_number_list(in_string):
     in_string = in_string.replace(',', '')
@@ -24,7 +24,7 @@ def get_number_list(in_string):
 def get_value(instruction_values, instruction_number):
     return instruction_values[instruction_number]
 
-def get_register(register_values, instruction_values, instruction_number):
+def get_register(instruction_values, instruction_number, register_values):
     register_number = get_value(instruction_values, instruction_number)
     return register_values[register_number]
 
@@ -32,12 +32,15 @@ def get_register(register_values, instruction_values, instruction_number):
 def add(left_value, right_value):
     return left_value + right_value
 
+def mul(left_value, right_value):
+    return left_value * right_value
+
 def binary(register_values_initial, register_values_expected_final, instruction_values, opcode_name):
     # Implement logic to strip off the last letter and call function with the remaining letters
     # and use that last letter to determine which parameters will be sent
-    left_value = get_register(register_values_initial, instruction_values, 1)
+    left_value = get_register(instruction_values, 1, register_values_initial)
     if opcode_name[-1] == 'r':
-        right_value = get_register(register_values_initial, instruction_values, 2)
+        right_value = get_register(instruction_values, 2, register_values_initial)
     else:
         right_value = get_value(instruction_values, 2)
     function_to_call = opcode_name[:-1]
@@ -93,9 +96,12 @@ def solve_problem(input_filename):
 
 solve_problem('input_sample0.txt')
 
+# Function get_value returns element 1 from the list
 def test_get_value():
     assert get_value([0,3,7,11], 1) == 3
 
+# Function get_register first determines element 1 from the first list, which is 3
+# and then it finds element 3 from the second list, which is 42
 def test_get_register():
-    assert get_register([0,3,7,11], 1) == 11
+    assert get_register([0,3,7,11], 1, [39, 40, 41, 42, 43]) == 42
 

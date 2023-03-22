@@ -12,6 +12,7 @@ import copy
 
 ALL_OPCODES = {'addr': 'binary', 'addi': 'binary', 'mulr': 'binary', 'muli':'binary', 
                'banr':'binary', 'bani':'binary', 'borr':'binary', 'bori':'binary',
+               'set_i':'set_',
                }
 
 def get_number_list(in_string):
@@ -60,6 +61,17 @@ def binary(register_values, instruction_values, opcode_name):
     function_to_call = opcode_name[:-1]
     result = eval(f'{function_to_call}(left_value,right_value)')
     set_register(instruction_values, 3, register_values, result)
+    return register_values
+
+
+def set_(register_values, instruction_values, opcode_name):
+    # Implement logic to strip off the last letter and call function with the remaining letters
+    # and use that last letter to determine whether "set register" or "set immediate"
+    if opcode_name[-1] == 'r':
+        value_to_copy = get_register(instruction_values, 1, register_values)
+    else:
+        value_to_copy = get_value(instruction_values, 1)
+    set_register(instruction_values, 3, register_values, value_to_copy)
     return register_values
 
 def get_opcode_succ_list(register_values_initial, instruction_values, register_values_expected_final):

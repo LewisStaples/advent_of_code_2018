@@ -4,7 +4,7 @@
 # https://adventofcode.com/2018/day/16
 
 TEST = False
-TEST = True
+# TEST = True
 
 
 import copy
@@ -134,21 +134,23 @@ def get_count_opcodes_with_result(input_filename):
                     instruction_values = get_number_list(in_string)
                 case 2:
                     matching_opcodes = get_opcode_succ_list(register_values, instruction_values, get_number_list(in_string))
-                    opcode_succ_count += len(matching_opcodes)
+
                     if TEST:
-                        print(f'The count of opcodes that match is: {opcode_succ_count}  ;  ', end = '')
                         print(f'Matching opcodes: {matching_opcodes}')
+                    if len(matching_opcodes) > 2:
+                        opcode_succ_count += 1
+                        if TEST:
+                            print('This has at least three matching opcodes')
+        # Note that sample test program ... not used in part 1
 
-        # Sample test program ... not used in part 1
-
-    print()
+    print(f'Count of opcodes with at least 3 matches:  {opcode_succ_count}\n')
     
 def solve_problem(input_filename):
-    in_string = get_count_opcodes_with_result(input_filename)
+    get_count_opcodes_with_result(input_filename)
 
 
 
-solve_problem('input_sample0.txt')
+solve_problem('input.txt')
 
 # Function get_value returns element 1 from the list
 def test_get_value():

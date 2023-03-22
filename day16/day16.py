@@ -6,13 +6,19 @@
 TEST = False
 TEST = True
 
+
 import copy
 
-# Storing the name of each operation, followed by the type of operator:  binary, unary, or conditional
+# Storing the name of each operation, followed by the type of operator:  binary_, set_, or boolean_
+#   binary_ calls a binary operator
+#   set_ handles setting registers
+#   boolean_ returns a value of 1 or 0, depending on whether a particular condition is met
 
-ALL_OPCODES = {'addr': 'binary', 'addi': 'binary', 'mulr': 'binary', 'muli':'binary', 
-               'banr':'binary', 'bani':'binary', 'borr':'binary', 'bori':'binary',
+ALL_OPCODES = {'addr': 'binary_', 'addi': 'binary_', 'mulr': 'binary_', 'muli':'binary_', 
+               'banr':'binary_', 'bani':'binary_', 'borr':'binary_', 'bori':'binary_',
                'set_i':'set_',
+               'gtir': 'boolean_', 'gtri': 'boolean_', 'gtrr': 'boolean_',
+               'eqir': 'boolean_', 'eqri': 'boolean_', 'eqrr': 'boolean_',
                }
 
 def get_number_list(in_string):
@@ -50,7 +56,7 @@ def ban(left_value, right_value):
 def bor(left_value, right_value):
     return left_value | right_value
 
-def binary(register_values, instruction_values, opcode_name):
+def binary_(register_values, instruction_values, opcode_name):
     # Implement logic to strip off the last letter and call function with the remaining letters
     # and use that last letter to determine which parameters will be sent
     left_value = get_register(instruction_values, 1, register_values)
@@ -72,6 +78,28 @@ def set_(register_values, instruction_values, opcode_name):
     else:
         value_to_copy = get_value(instruction_values, 1)
     set_register(instruction_values, 3, register_values, value_to_copy)
+    return register_values
+
+def gt(left_value, right_value):
+    return left_value > right_value
+
+def eq(left_value, right_value):
+    return left_value == right_value
+
+def boolean_(register_values, instruction_values, opcode_name):
+    # Implement logic to strip off the last letter and call function with the remaining letters
+    # and use that last letter to determine which parameters will be sent
+    if opcode_name[-2] == 'r':
+        left_value = get_register(instruction_values, 1, register_values)
+    else:
+        left_value = get_value(instruction_values, 1)
+    if opcode_name[-1] == 'r':
+        right_value = get_register(instruction_values, 2, register_values)
+    else:
+        right_value = get_value(instruction_values, 2)
+    function_to_call = opcode_name[:-2]
+    result = eval(f'{function_to_call}(left_value,right_value)')
+    set_register(instruction_values, 3, register_values, result)
     return register_values
 
 def get_opcode_succ_list(register_values_initial, instruction_values, register_values_expected_final):

@@ -4,7 +4,7 @@
 # https://adventofcode.com/2018/day/16
 
 TEST = False
-# TEST = True
+TEST = True
 
 
 import copy
@@ -16,7 +16,7 @@ import copy
 
 ALL_OPCODES = {'addr': 'binary_', 'addi': 'binary_', 'mulr': 'binary_', 'muli':'binary_', 
                'banr':'binary_', 'bani':'binary_', 'borr':'binary_', 'bori':'binary_',
-               'set_i':'set_',
+               'set_i':'set_', 'set_r':'set_',
                'gtir': 'boolean_', 'gtri': 'boolean_', 'gtrr': 'boolean_',
                'eqir': 'boolean_', 'eqri': 'boolean_', 'eqrr': 'boolean_',
                }
@@ -143,7 +143,7 @@ def get_count_opcodes_with_result(input_filename):
                             print('This has at least three matching opcodes')
         # Note that sample test program ... not used in part 1
 
-    print(f'Count of opcodes with at least 3 matches:  {opcode_succ_count}\n')
+    print(f'Count of opcodes with at least 3 matches (Part 1 Answer):  {opcode_succ_count}\n')
     
 def solve_problem(input_filename):
     get_count_opcodes_with_result(input_filename)

@@ -8,11 +8,12 @@ TEST = True
 
 
 import copy
+import numpy as np
 
 # Storing the name of each operation, followed by the type of operator:  binary_, set_, or boolean_
 #   binary_ calls a binary operator
 #   set_ handles setting registers
-#   boolean_ returns a value of 1 or 0, depending on whether a particular condition is met
+#   boolean_ returns a boolean value, depending on whether a particular condition is met
 
 ALL_OPCODES = {'addr': 'binary_', 'addi': 'binary_', 'mulr': 'binary_', 'muli':'binary_', 
                'banr':'binary_', 'bani':'binary_', 'borr':'binary_', 'bori':'binary_',
@@ -116,8 +117,13 @@ def get_count_opcodes_with_result(input_filename):
     register_values = None
     instruction_values = None
     opcode_succ_count = 0
+    # working_map = dict()
+
+    coeff_matrix = [None]*len(ALL_OPCODES)
+    # np_opcodes = np.array(ALL_OPCODES.keys())
 
     print(f'\nUsing input file: {input_filename}\n')
+
     # Reading input from the input file
     with open(input_filename) as f:
         # Pull in each line from the input file
@@ -141,7 +147,47 @@ def get_count_opcodes_with_result(input_filename):
                         opcode_succ_count += 1
                         if TEST:
                             print('This has at least three matching opcodes')
-        # Note that sample test program ... not used in part 1
+                    # working_map[instruction_values[0]] = matching_opcodes
+                    coeff_matrix[instruction_values[0]] = [1 if opcode in matching_opcodes else 0 for opcode in ALL_OPCODES ]
+                    # opcode_vector[instruction_values[0]] = len(matching_opcodes)
+
+                    dummy = 123
+
+        # Solve 
+        opcode_to_function = dict()
+        all_opcodes_keys = list(ALL_OPCODES.keys())
+        # last_opcode_index = None
+        prior_opcode_indices = []
+        # for _ in range(len(ALL_OPCODES)):
+        while len(prior_opcode_indices) < len(ALL_OPCODES):
+            for c_m_index in range(len(ALL_OPCODES)):
+                # if last_opcode_index is not None:
+                #     coeff_matrix[c_m_index][last_opcode_index] = 0
+                for prior_opcode_index in prior_opcode_indices:
+                    coeff_matrix[c_m_index][prior_opcode_index] = 0
+                if 1 == sum(coeff_matrix[c_m_index]):
+                    # try:
+                    opcode_to_function[c_m_index] = all_opcodes_keys[coeff_matrix[c_m_index].index(1)]
+                    # except KeyError:
+                    #     dummy = 123
+
+                    # last_opcode_index = c_m_index
+                    prior_opcode_indices.append(c_m_index)
+                    # coeff_matrix[c_m_index][c_m_index] = 0
+                    dummy = 123
+
+                    # break
+
+                # [c_m_index] = matching_opcodes[coeff_matrix[c_m_index].index(True)]
+                dummy = 123
+
+
+
+        # np_coeff_matrix = np.array(coeff_matrix)
+        # np_opcode_vector = np.array(opcode_vector)
+        # solution = np.linalg.solve(np_coeff_matrix, np_opcode_vector)
+
+        # dummy = 123
 
     print(f'Count of opcodes with at least 3 matches (Part 1 Answer):  {opcode_succ_count}\n')
     

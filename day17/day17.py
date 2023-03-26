@@ -13,18 +13,24 @@ def get_clay_coords(input_filename):
     with open(input_filename) as f:
         # Pull in each line from the input file
         for in_string in f:
-            s0, s1 = in_string.rstrip().split(', ')
-            loop_lower, loop_upper = s1.split('=')[1].split('..')
+            singleton_str, range_str = in_string.rstrip().split(', ')
+
+            const_var_str = singleton_str[0]
+            const_var = int(singleton_str[2:])
+            globals()[const_var_str] = const_var
+            
+            loop_var_str = range_str[0]
+            loop_lower, loop_upper = range_str.split('=')[1].split('..')
             for loop_var in range(int(loop_lower), int(loop_upper) + 1):
-                pass
-            dummy = 123
+                globals()[loop_var_str] = loop_var
+                clay_coords.add((x,y))
 
             # print(in_string)
     # print()
     return clay_coords
     
 def solve_problem(input_filename):
-    in_string = get_clay_coords(input_filename)
+    clay_coords = get_clay_coords(input_filename)
 
 
 

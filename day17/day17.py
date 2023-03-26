@@ -24,13 +24,47 @@ def get_clay_coords(input_filename):
             for loop_var in range(int(loop_lower), int(loop_upper) + 1):
                 globals()[loop_var_str] = loop_var
                 clay_coords.add((x,y))
-
-            # print(in_string)
-    # print()
     return clay_coords
+
+def display(clay_coords, water_coords):
+    if len(clay_coords) < 1:
+        # There is nothing to display
+        return
     
+    margins = {
+        'min_x': float('inf'),
+        'max_x': float('-inf'),
+        'max_y': float('-inf'),
+    }
+    for clay_coord in clay_coords:
+        margins['min_x'] = min(margins['min_x'], clay_coord[0])
+        margins['max_x'] = max(margins['max_x'], clay_coord[0])
+        margins['max_y'] = max(margins['max_y'], clay_coord[1])
+    for water_coord in water_coords:
+        margins['min_x'] = min(margins['min_x'], water_coord[0])
+        margins['max_x'] = max(margins['max_x'], water_coord[0])
+        margins['max_y'] = max(margins['max_y'], water_coord[1])
+
+    # Add a margin of 1, and add more to maxes for the for loop
+    margins['min_x'] -= 1
+    margins['max_x'] += 2
+    margins['max_y'] += 2
+
+    for y in range(margins['max_y']):
+        for x in range(margins['min_x'], margins['max_x']):
+            if (x,y) in clay_coords:
+                print('#', end = '')
+            elif (x,y) in water_coords:
+                print('~', end = '')
+            else:
+                print('.', end = '')
+        print()
+
+
 def solve_problem(input_filename):
     clay_coords = get_clay_coords(input_filename)
+    water_coords = set()
+    display(clay_coords, water_coords)
 
 
 

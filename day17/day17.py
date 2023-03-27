@@ -6,8 +6,15 @@
 
 # POTENTIAL ALTERNATIVE FOR MUTLIPLE LINE INPUT FILES ....
 
-def get_clay_coords(input_filename):
+def get_initial_state(input_filename):
     clay_coords = set()
+
+    margins = {
+        'min_x': float('inf'),
+        'max_x': float('-inf'),
+        'max_y': float('-inf'),
+    }
+
     # Reading input from the input file
     print(f'\nUsing input file: {input_filename}\n')
     with open(input_filename) as f:
@@ -24,31 +31,41 @@ def get_clay_coords(input_filename):
             for loop_var in range(int(loop_lower), int(loop_upper) + 1):
                 globals()[loop_var_str] = loop_var
                 clay_coords.add((x,y))
-    return clay_coords
 
-def display(clay_coords, water_coords):
-    if len(clay_coords) < 1:
-        # There is nothing to display
-        return
-    
-    margins = {
-        'min_x': float('inf'),
-        'max_x': float('-inf'),
-        'max_y': float('-inf'),
-    }
-    for clay_coord in clay_coords:
-        margins['min_x'] = min(margins['min_x'], clay_coord[0])
-        margins['max_x'] = max(margins['max_x'], clay_coord[0])
-        margins['max_y'] = max(margins['max_y'], clay_coord[1])
-    for water_coord in water_coords:
-        margins['min_x'] = min(margins['min_x'], water_coord[0])
-        margins['max_x'] = max(margins['max_x'], water_coord[0])
-        margins['max_y'] = max(margins['max_y'], water_coord[1])
+            margins['min_x'] = min(margins['min_x'], x)
+            margins['max_x'] = max(margins['max_x'], x)
+            margins['max_y'] = max(margins['max_y'], y)
 
     # Add a margin of 1, and add more to maxes for the for loop
     margins['min_x'] -= 1
     margins['max_x'] += 2
     margins['max_y'] += 2
+
+    return clay_coords, margins
+
+def display(clay_coords, water_coords, margins):
+    if len(clay_coords) < 1:
+        # There is nothing to display
+        return
+    
+    # margins = {
+    #     'min_x': float('inf'),
+    #     'max_x': float('-inf'),
+    #     'max_y': float('-inf'),
+    # }
+    # for clay_coord in clay_coords:
+    #     margins['min_x'] = min(margins['min_x'], clay_coord[0])
+    #     margins['max_x'] = max(margins['max_x'], clay_coord[0])
+    #     margins['max_y'] = max(margins['max_y'], clay_coord[1])
+    # for water_coord in water_coords:
+    #     margins['min_x'] = min(margins['min_x'], water_coord[0])
+    #     margins['max_x'] = max(margins['max_x'], water_coord[0])
+    #     margins['max_y'] = max(margins['max_y'], water_coord[1])
+
+    # # Add a margin of 1, and add more to maxes for the for loop
+    # margins['min_x'] -= 1
+    # margins['max_x'] += 2
+    # margins['max_y'] += 2
 
     for y in range(margins['max_y']):
         for x in range(margins['min_x'], margins['max_x']):
@@ -62,9 +79,9 @@ def display(clay_coords, water_coords):
 
 
 def solve_problem(input_filename):
-    clay_coords = get_clay_coords(input_filename)
+    clay_coords, margins = get_initial_state(input_filename)
     water_coords = set()
-    display(clay_coords, water_coords)
+    display(clay_coords, water_coords, margins)
 
 
 

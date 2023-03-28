@@ -4,6 +4,9 @@
 # https://adventofcode.com/2018/day/17
 
 
+# import numpy as np
+# import copy
+
 # POTENTIAL ALTERNATIVE FOR MUTLIPLE LINE INPUT FILES ....
 
 def get_initial_state(input_filename):
@@ -36,11 +39,12 @@ def get_initial_state(input_filename):
             margins['max_x'] = max(margins['max_x'], x)
             margins['max_y'] = max(margins['max_y'], y)
 
-    # Add a margin of 1, and add more to maxes for the for loop
+    # Add horizontal margins of 1
     margins['min_x'] -= 1
-    margins['max_x'] += 2
-    margins['max_y'] += 2
-
+    margins['max_x'] += 1
+    # Add more to margin maxes for the for loop
+    margins['max_x'] += 1
+    # margins['max_y'] += 1
     return clay_coords, margins
 
 def display(clay_coords, water_coords, margins):
@@ -48,44 +52,88 @@ def display(clay_coords, water_coords, margins):
         # There is nothing to display
         return
     
-    # margins = {
-    #     'min_x': float('inf'),
-    #     'max_x': float('-inf'),
-    #     'max_y': float('-inf'),
-    # }
-    # for clay_coord in clay_coords:
-    #     margins['min_x'] = min(margins['min_x'], clay_coord[0])
-    #     margins['max_x'] = max(margins['max_x'], clay_coord[0])
-    #     margins['max_y'] = max(margins['max_y'], clay_coord[1])
-    # for water_coord in water_coords:
-    #     margins['min_x'] = min(margins['min_x'], water_coord[0])
-    #     margins['max_x'] = max(margins['max_x'], water_coord[0])
-    #     margins['max_y'] = max(margins['max_y'], water_coord[1])
-
-    # # Add a margin of 1, and add more to maxes for the for loop
-    # margins['min_x'] -= 1
-    # margins['max_x'] += 2
-    # margins['max_y'] += 2
-
     for y in range(margins['max_y']):
         for x in range(margins['min_x'], margins['max_x']):
             if (x,y) in clay_coords:
                 print('#', end = '')
             elif (x,y) in water_coords:
-                print('~', end = '')
+                print('W', end = '')
             else:
                 print('.', end = '')
         print()
+    print()
+
+
+def vertical_drop(clay_coords, water_coords, margins):
+    pass
+
+def new_water_drop(clay_coords, water_coords, margins):
+    # new_drop = np.array([500,0])
+    new_drop = (500,0)
+
+    # # Vertical drop through sand
+    # while True:
+    #     newer_drop = (new_drop[0], new_drop[1])
+    #     if in clay_coords:
+    #         return
+
+    # while (new_drop[0], new_drop[1] + 1) not in clay_coords:
+
+    # while True:
+    #     if vertical_drop(clay_coords, water_coords, margins, new_drop):
+    #         continue
+
+    # while True:
+    #     new_drop = 
+    #     # newer_drop = copy.copy(new_drop)
+    #     # newer_drop = copy.copy(new_drop)
+    #     # newer_drop[0] -= 1
+    #     # if new
+
+    #     dummy = 123
+
+    return water_coords
 
 
 def solve_problem(input_filename):
+    # Initial State
     clay_coords, margins = get_initial_state(input_filename)
     water_coords = set()
     display(clay_coords, water_coords, margins)
+    
+    # Virtual value to start things off
+    latest_water_position = (500, -1)
+
+    while True:
+        new_position = (latest_water_position[0], latest_water_position[1] + 1)
+        if new_position in clay_coords:
+            display(clay_coords, water_coords, margins)
+            return
+        else:
+            water_coords.add(new_position)
+
+        # if new_position in water_coords:
+        #     return
+        latest_water_position = new_position
+
+    # # Fill with water
+    # while True:
+    #     position = latest_water__level.pop()
+    #     new_position = (position[0], position[1] - 1)
+    #     if new_position in clay_coords:
+    #         display(clay_coords, water_coords, margins)
+    #         return
+    #     if new_position in water_coords:
+    #         display(clay_coords, water_coords, margins)
+    #         return
+    #     water_coords.add(new_position)
+    #     latest_water__level.add(new_position)
+    #     # latest_water__level.add(new_position)
 
 
 
 solve_problem('input_sample0.txt')
+
 
 # def test_sample_0():
 #     solve_problem('input_sample0.txt')

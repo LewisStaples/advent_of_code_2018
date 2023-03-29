@@ -15,6 +15,7 @@ def get_initial_state(input_filename):
     margins = {
         'min_x': float('inf'),
         'max_x': float('-inf'),
+        'min_y': float('inf'),
         'max_y': float('-inf'),
     }
 
@@ -35,15 +36,19 @@ def get_initial_state(input_filename):
                 globals()[loop_var_str] = loop_var
                 clay_coords.add((x,y))
 
-            margins['min_x'] = min(margins['min_x'], x)
-            margins['max_x'] = max(margins['max_x'], x)
-            margins['max_y'] = max(margins['max_y'], y)
+                margins['min_x'] = min(margins['min_x'], x)
+                margins['max_x'] = max(margins['max_x'], x)
+                margins['min_y'] = min(margins['min_y'], y)
+                margins['max_y'] = max(margins['max_y'], y)
 
-    # Add horizontal margins of 1
-    margins['min_x'] -= 1
-    margins['max_x'] += 1
+    # # Add horizontal margins of 1
+    # margins['min_x'] -= 1
+    # margins['max_x'] += 1
+
+    # NO .....
+    #
     # Add more to margin maxes for the for loop
-    margins['max_x'] += 1
+    # margins['max_x'] += 1
     # margins['max_y'] += 1
     return clay_coords, margins
 
@@ -52,15 +57,23 @@ def display(clay_coords, water_coords, margins):
         # There is nothing to display
         return
     
-    for y in range(margins['max_y']):
-        for x in range(margins['min_x'], margins['max_x']):
+    for y in range(margins['max_y'] + 1):
+        if y == margins['min_y']:
+            print('---- ', end= '')
+        else:
+            print('     ', end= '')
+        for x in range(margins['min_x'], margins['max_x'] + 1):
             if (x,y) in clay_coords:
                 print('#', end = '')
             elif (x,y) in water_coords:
                 print('W', end = '')
             else:
                 print('.', end = '')
-        print()
+        if y == margins['min_y']:
+            print(' ----')
+        else:
+            print('     ')
+        # print(' ----')
     print()
 
 
@@ -110,7 +123,11 @@ def solve_problem(input_filename):
             display(clay_coords, water_coords, margins)
             return
         else:
-            water_coords.add(new_position)
+            if new_position[0] >= margins['min_x']:
+                if new_position[0] <= margins['max_x']:
+                    if new_position[1] >= margins['min_y']:
+                        if new_position[1] <= margins['max_y']:
+                            water_coords.add(new_position)
 
         # if new_position in water_coords:
         #     return

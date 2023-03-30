@@ -107,6 +107,13 @@ def new_water_drop(clay_coords, water_coords, margins):
 
     return water_coords
 
+def within_margins(position, margins):
+    if position[0] >= margins['min_x']:
+        if position[0] <= margins['max_x']:
+            if position[1] >= margins['min_y']:
+                if position[1] <= margins['max_y']:
+                    return True
+    return False
 
 def solve_problem(input_filename):
     # Initial State
@@ -123,11 +130,9 @@ def solve_problem(input_filename):
             display(clay_coords, water_coords, margins)
             return
         else:
-            if new_position[0] >= margins['min_x']:
-                if new_position[0] <= margins['max_x']:
-                    if new_position[1] >= margins['min_y']:
-                        if new_position[1] <= margins['max_y']:
-                            water_coords.add(new_position)
+            # Only add the water drop if it is within all margins
+            if within_margins(new_position, margins):
+                water_coords.add(new_position)
 
         # if new_position in water_coords:
         #     return

@@ -5,7 +5,7 @@
 
 
 # import numpy as np
-# import copy
+import copy
 
 # POTENTIAL ALTERNATIVE FOR MUTLIPLE LINE INPUT FILES ....
 
@@ -125,32 +125,56 @@ def solve_problem(input_filename):
     latest_water_position = (500, -1)
 
     while True:
-        new_position = (latest_water_position[0], latest_water_position[1] + 1)
-        if new_position in clay_coords:
-            display(clay_coords, water_coords, margins)
-            return
-        else:
-            # Only add the water drop if it is within all margins
-            if within_margins(new_position, margins):
-                water_coords.add(new_position)
+        # Try a single space vertical drop
+        vertical_drop_position = (latest_water_position[0], latest_water_position[1] + 1)
+        if vertical_drop_position not in clay_coords:
+            if vertical_drop_position not in water_coords:
+                # Only add the water drop if it is within all margins
+                if within_margins(vertical_drop_position, margins):
+                    water_coords.add(vertical_drop_position)
 
-        # if new_position in water_coords:
+                if True:
+                    latest_water_position = vertical_drop_position
+                    display(clay_coords, water_coords, margins)
+                    continue
+        
+        # Try horizontal movement
+        horizontal_movement_position = latest_water_position
+        while True:
+            horizontal_movement_position = (horizontal_movement_position[0] - 1, horizontal_movement_position[1])
+            if horizontal_movement_position in clay_coords:
+                break
+            if horizontal_movement_position not in water_coords:
+                # Only add the water drop if it is within all margins
+                if within_margins(horizontal_movement_position, margins):
+                    water_coords.add(horizontal_movement_position)
+                    latest_water_position = horizontal_movement_position
+                    # Continue the outer while loop
+                break # THIS IS WRONG AND NEEDS TO BE REFACTORED
+
+        display(clay_coords, water_coords, margins)
+
+        dummy = 123
+
+
+
+        # if vertical_drop_position in water_coords:
         #     return
-        latest_water_position = new_position
+        
 
     # # Fill with water
     # while True:
     #     position = latest_water__level.pop()
-    #     new_position = (position[0], position[1] - 1)
-    #     if new_position in clay_coords:
+    #     vertical_drop_position = (position[0], position[1] - 1)
+    #     if vertical_drop_position in clay_coords:
     #         display(clay_coords, water_coords, margins)
     #         return
-    #     if new_position in water_coords:
+    #     if vertical_drop_position in water_coords:
     #         display(clay_coords, water_coords, margins)
     #         return
-    #     water_coords.add(new_position)
-    #     latest_water__level.add(new_position)
-    #     # latest_water__level.add(new_position)
+    #     water_coords.add(vertical_drop_position)
+    #     latest_water__level.add(vertical_drop_position)
+    #     # latest_water__level.add(vertical_drop_position)
 
 
 

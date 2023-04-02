@@ -63,30 +63,36 @@ def display(clay_coords, water_coords, margins):
     print()
 
 
-def within_margins(position, margins):
-    if position[0] >= margins['min_x']:
-        if position[0] <= margins['max_x']:
-            if position[1] >= margins['min_y']:
-                if position[1] <= margins['max_y']:
-                    return True
-    return False
+# def within_margins(position, margins):
+#     if position[0] >= margins['min_x']:
+#         if position[0] <= margins['max_x']:
+#             if position[1] >= margins['min_y']:
+#                 if position[1] <= margins['max_y']:
+#                     return True
+#     return False
 
 def vertical_drop(position_in):
     return (position_in[0], position_in[1] + 1)
 
-def get_horizontal_slice(current_position, clay_coords, water_coords, margins):
+def get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins):
     # horizontal_slice = {current_position}
     occupied_coords = clay_coords | water_coords
     # new_position = (current_position[0] - 1, current_position[1])
     new_position = current_position
     while True:
+        new_position = (new_position[0] - 1, new_position[1])
         if new_position in clay_coords:
             break
-        new_position = (new_position[0] - 1, new_position[1])
+        # if new_position[0] < margins['min_x']:
+        #     break
+        water_coords.add(new_position)
         if (new_position[0], new_position[1] + 1) not in occupied_coords:
+            water_positions.append(new_position)
+            dummy = 123
+
             break
         # horizontal_slice.add(new_position)
-        water_coords.add(new_position)
+
 
         
 
@@ -108,9 +114,14 @@ def solve_problem(input_filename):
             return
         if vertical_drop_position not in clay_coords:
             if vertical_drop_position not in water_coords:
-                water_positions.append(vertical_drop_position)
-                water_coords.add(vertical_drop_position)
-                continue
+                # if vertical_drop_position not in water_coords:
+                # if within_margins(vertical_drop_position, margins):
+                if vertical_drop_position[1] <= margins['max_y']:
+                    water_positions.append(vertical_drop_position)
+                    water_coords.add(vertical_drop_position)
+                    continue
+                else:
+                    break
         # If the water cannot go down, the water will move horizontally
         # try:
         current_position = water_positions.pop()
@@ -118,7 +129,7 @@ def solve_problem(input_filename):
         #     dummy = 123
         
         # current_horizontal_slice = get_horizontal_slice(current_position, clay_coords, water_coords, margins)
-        get_horizontal_slice(current_position, clay_coords, water_coords, margins)
+        get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins)
         display(clay_coords, water_coords, margins)
         # break
 

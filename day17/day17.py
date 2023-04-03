@@ -59,39 +59,34 @@ def display(clay_coords, water_coords, margins):
             print(' ----')
         else:
             print('     ')
-        # print(' ----')
     print()
 
-
-# def within_margins(position, margins):
-#     if position[0] >= margins['min_x']:
-#         if position[0] <= margins['max_x']:
-#             if position[1] >= margins['min_y']:
-#                 if position[1] <= margins['max_y']:
-#                     return True
-#     return False
 
 def vertical_drop(position_in):
     return (position_in[0], position_in[1] + 1)
 
 def get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins):
-    # horizontal_slice = {current_position}
     occupied_coords = clay_coords | water_coords
-    # new_position = (current_position[0] - 1, current_position[1])
+    # Expand the horizontal slice to the left
     new_position = current_position
     while True:
         new_position = (new_position[0] - 1, new_position[1])
         if new_position in clay_coords:
             break
-        # if new_position[0] < margins['min_x']:
-        #     break
         water_coords.add(new_position)
         if (new_position[0], new_position[1] + 1) not in occupied_coords:
             water_positions.append(new_position)
-            dummy = 123
-
             break
-        # horizontal_slice.add(new_position)
+    # Expand the horizontal slice to the right
+    new_position = current_position
+    while True:
+        new_position = (new_position[0] + 1, new_position[1])
+        if new_position in clay_coords:
+            break
+        water_coords.add(new_position)
+        if (new_position[0], new_position[1] + 1) not in occupied_coords:
+            water_positions.append(new_position)
+            break
 
 
         
@@ -123,23 +118,22 @@ def solve_problem(input_filename):
                 else:
                     break
         # If the water cannot go down, the water will move horizontally
-        # try:
         current_position = water_positions.pop()
-        # except IndexError:
-        #     dummy = 123
-        
-        # current_horizontal_slice = get_horizontal_slice(current_position, clay_coords, water_coords, margins)
         get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins)
         display(clay_coords, water_coords, margins)
         # break
 
     
 
-    dummy = 123
+    display(clay_coords, water_coords, margins)
+    return len(water_coords)
 
 
 
-solve_problem('input_sample0.txt')
+water_tile_count = solve_problem('input_sample0.txt')
+print(f'The final result is: {water_tile_count}\n')
+
+
 
 
 # def test_sample_0():

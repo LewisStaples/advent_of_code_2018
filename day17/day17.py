@@ -66,7 +66,10 @@ def vertical_drop(position_in):
     return (position_in[0], position_in[1] + 1)
 
 def get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins):
+    # new_water_positions = list()
+    orig_len_water_positions = len(water_positions) 
     occupied_coords = clay_coords | water_coords
+
     # Expand the horizontal slice to the left
     new_position = current_position
     while True:
@@ -74,9 +77,11 @@ def get_horizontal_slice(current_position, clay_coords, water_coords, water_posi
         if new_position in clay_coords:
             break
         water_coords.add(new_position)
+        # Detect any spill-over
         if (new_position[0], new_position[1] + 1) not in occupied_coords:
             water_positions.append(new_position)
             break
+
     # Expand the horizontal slice to the right
     new_position = current_position
     while True:
@@ -84,11 +89,23 @@ def get_horizontal_slice(current_position, clay_coords, water_coords, water_posi
         if new_position in clay_coords:
             break
         water_coords.add(new_position)
+        # Detect any spill-over
         if (new_position[0], new_position[1] + 1) not in occupied_coords:
             water_positions.append(new_position)
             break
 
+    # If expansion in either direction has led to spill-over,
+    if len(water_positions) > orig_len_water_positions:
 
+        # Remove from water positions
+        #     The element at index orig_len_water_positions
+        #     Plus all elements before that that are immediately above it
+        #     Because they have already been accounted for
+
+        pass
+
+    # if len(new_water_positions) > 0:
+    #     water_positions = new_water_positions
         
 
 
@@ -103,20 +120,28 @@ def solve_problem(input_filename):
 
     while True:
         # If possible, the water will go down
-        try:
-            vertical_drop_position = vertical_drop(water_positions[-1])
-        except IndexError:
-            return
+        # try:
+        vertical_drop_position = vertical_drop(water_positions[-1])
+            # vertical_drop_position = vertical_drop(water_positions.pop())
+        # except IndexError:
+            # return
         if vertical_drop_position not in clay_coords:
             if vertical_drop_position not in water_coords:
-                # if vertical_drop_position not in water_coords:
-                # if within_margins(vertical_drop_position, margins):
                 if vertical_drop_position[1] <= margins['max_y']:
+                    # water_positions.pop()
+                    # if vertical_drop_position not in water_positions:
                     water_positions.append(vertical_drop_position)
                     water_coords.add(vertical_drop_position)
                     continue
+            # else:
+
                 else:
+                    # water_positions.pop()
+                    # continue
                     break
+
+            # water_positions.pop()
+            # continue
         # If the water cannot go down, the water will move horizontally
         current_position = water_positions.pop()
         get_horizontal_slice(current_position, clay_coords, water_coords, water_positions, margins)

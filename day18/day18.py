@@ -8,6 +8,8 @@ def get_input(input_filename):
     lumber_collection_area = list()
     # Reading input from the input file
     print(f'\nUsing input file: {input_filename}\n')
+    print(f'"." is Open Ground\n"|" is Trees\n"#" is a lumberyard\n')
+
     with open(input_filename) as f:
         # Pull in each line from the input file
         for in_string in f:
@@ -17,12 +19,23 @@ def get_input(input_filename):
     print()
     return lumber_collection_area
     
-def solve_problem(input_filename):
+
+def get_lca_pair(input_filename):
     lca_pair = [None, None]
     lca_pair[0] = get_input(input_filename)
+    lca_pair[1] = [
+        list()
+        for row in lca_pair[0]
+    ]
+    return lca_pair
 
+
+def solve_problem(input_filename):
+    lca_pair = get_lca_pair(input_filename)
     for minutes_passed in range(1, 11):
         # Demonstration only ... actual logic is more complicated
-        lca_pair[minutes_passed % 2] = lca_pair[(minutes_passed - 1) % 2]
-
+        for row_number, (new_row, old_row) in enumerate(zip(lca_pair[minutes_passed % 2], lca_pair[(minutes_passed - 1) % 2])):
+            new_row.clear()
+            for column_number, old_ele in enumerate(old_row):
+                new_row.append('$')
 solve_problem('input_sample0.txt')

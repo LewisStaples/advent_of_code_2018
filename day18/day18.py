@@ -14,7 +14,8 @@ def get_input(input_filename):
         # Pull in each line from the input file
         for in_string in f:
             in_string = in_string.rstrip()
-            print(in_string)
+            if len(in_string) < 15:
+                print(in_string)
             lumber_collection_area.append(list(in_string))
     print()
     return lumber_collection_area
@@ -30,6 +31,39 @@ def get_lca_pair(input_filename):
     return lca_pair
 
 
+def get_adjacents(lca, row_number, col_number):
+    ADJACENT_UNIT_VECTORS = list(
+        (-1,0),
+        (1,0),
+        (-1,1),
+        (1,1),
+        (0,1),
+        (-1,-1),
+        (1,-1),
+        (0,-1),
+    )
+
+    ret_val = {
+        'open_ground': 0,
+        'trees': 0,
+        'lumberyard': 0
+    }
+
+    for auv in ADJACENT_UNIT_VECTORS:
+        try:
+            acre_type = lca[row_number][col_number]
+        except IndexError:
+            continue
+        match acre_type:
+            case '.': 
+                ret_val['open_ground'] += 1
+            case '|':
+                ret_val['trees'] += 1
+            case '#':
+                ret_val['lumberyard'] += 1
+    return ret_val
+
+
 def solve_problem(input_filename):
     lca_pair = get_lca_pair(input_filename)
     for minutes_passed in range(1, 11):
@@ -38,4 +72,7 @@ def solve_problem(input_filename):
             new_row.clear()
             for column_number, old_ele in enumerate(old_row):
                 new_row.append('$')
+
 solve_problem('input_sample0.txt')
+
+

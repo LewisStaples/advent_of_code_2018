@@ -32,7 +32,7 @@ def get_lca_pair(input_filename):
 
 
 def get_adjacents(lca, row_number, col_number):
-    ADJACENT_UNIT_VECTORS = list(
+    ADJACENT_UNIT_VECTORS = [
         (-1,0),
         (1,0),
         (-1,1),
@@ -41,7 +41,7 @@ def get_adjacents(lca, row_number, col_number):
         (-1,-1),
         (1,-1),
         (0,-1),
-    )
+    ]
 
     ret_val = {
         'open_ground': 0,
@@ -50,10 +50,16 @@ def get_adjacents(lca, row_number, col_number):
     }
 
     for auv in ADJACENT_UNIT_VECTORS:
-        try:
-            acre_type = lca[row_number][col_number]
-        except IndexError:
+        adj_row = row_number + auv[1]
+        adj_col = col_number + auv[0]
+        if adj_col < 0 | adj_row < 0:
             continue
+        acre_type = lca[adj_row][adj_col]
+        # if row_number + auv[1] < 0:
+        #     continue
+        # if col_number + auv[0] < 0:
+        #     continue
+        # acre_type = lca[row_number + auv[1]][col_number + auv[0]]
         match acre_type:
             case '.': 
                 ret_val['open_ground'] += 1
@@ -61,6 +67,7 @@ def get_adjacents(lca, row_number, col_number):
                 ret_val['trees'] += 1
             case '#':
                 ret_val['lumberyard'] += 1
+    print(f'get_adjacents Return value: {ret_val}')
     return ret_val
 
 
@@ -73,6 +80,14 @@ def solve_problem(input_filename):
             for column_number, old_ele in enumerate(old_row):
                 new_row.append('$')
 
+
 solve_problem('input_sample0.txt')
 
 
+def test__get_adjacents():
+    lca = get_input('input_sample0.txt')
+    assert get_adjacents(lca, 0, 0) == {
+        'lumberyard': 1,
+        'trees': 0,
+        'open_ground': 2,
+    }

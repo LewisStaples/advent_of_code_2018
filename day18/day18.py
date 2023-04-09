@@ -3,6 +3,13 @@
 # adventOfCode 2018 day 18
 # https://adventofcode.com/2018/day/18
 
+def display(lca):
+    if len(lca) > 15:
+        return
+    for row in lca:
+        print(''.join(row))
+    print()
+
 
 def get_input(input_filename):
     lumber_collection_area = list()
@@ -14,10 +21,9 @@ def get_input(input_filename):
         # Pull in each line from the input file
         for in_string in f:
             in_string = in_string.rstrip()
-            if len(in_string) < 15:
-                print(in_string)
             lumber_collection_area.append(list(in_string))
-    print()
+    print('Initial LCA status:')
+    display(lumber_collection_area)
     return lumber_collection_area
     
 
@@ -52,14 +58,14 @@ def get_adjacents(lca, row_number, col_number):
     for auv in ADJACENT_UNIT_VECTORS:
         adj_row = row_number + auv[1]
         adj_col = col_number + auv[0]
+        # Protect against indices less than zero
         if adj_col < 0 | adj_row < 0:
             continue
-        acre_type = lca[adj_row][adj_col]
-        # if row_number + auv[1] < 0:
-        #     continue
-        # if col_number + auv[0] < 0:
-        #     continue
-        # acre_type = lca[row_number + auv[1]][col_number + auv[0]]
+        try:
+            acre_type = lca[adj_row][adj_col]
+        # Protect against indices that are greater than maximum for that index
+        except IndexError:
+            continue
         match acre_type:
             case '.': 
                 ret_val['open_ground'] += 1
@@ -67,18 +73,32 @@ def get_adjacents(lca, row_number, col_number):
                 ret_val['trees'] += 1
             case '#':
                 ret_val['lumberyard'] += 1
-    print(f'get_adjacents Return value: {ret_val}')
     return ret_val
 
 
 def solve_problem(input_filename):
     lca_pair = get_lca_pair(input_filename)
     for minutes_passed in range(1, 11):
-        # Demonstration only ... actual logic is more complicated
         for row_number, (new_row, old_row) in enumerate(zip(lca_pair[minutes_passed % 2], lca_pair[(minutes_passed - 1) % 2])):
             new_row.clear()
             for column_number, old_ele in enumerate(old_row):
-                new_row.append('$')
+                new_ele = old_ele
+                adjacents = get_adjacents(lca_pair[(minutes_passed - 1) % 2], row_number, column_number)
+                if old_ele == '.':  # open ground
+                    if adjacents['trees'] >= 3:
+                        new_ele = '|'  # now it's trees:
+
+                if old_ele == '|': # trees
+                    if adjacents['lumberyard'] >= 3:
+                        new_ele = '#' # now it's a lumberyard
+
+                if old_ele == '#': # lumberyard
+                    if (adjacents['lumberyard'] < 1) | (adjacents['trees'] < 1):
+                        new_ele = '.' # now it's open ground
+
+                new_row.append(new_ele)
+        print(f'Minutes passed: {minutes_passed}')
+        display(lca_pair[minutes_passed % 2])
 
 
 solve_problem('input_sample0.txt')

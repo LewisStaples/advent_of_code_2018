@@ -59,7 +59,7 @@ def get_adjacents(lca, row_number, col_number):
         adj_row = row_number + auv[1]
         adj_col = col_number + auv[0]
         # Protect against indices less than zero
-        if adj_col < 0 | adj_row < 0:
+        if (adj_col < 0) | (adj_row < 0):
             continue
         try:
             acre_type = lca[adj_row][adj_col]
@@ -74,6 +74,26 @@ def get_adjacents(lca, row_number, col_number):
             case '#':
                 ret_val['lumberyard'] += 1
     return ret_val
+
+
+def get_total_resource_value(lca_pair, minutes_passed):
+    acre_type_count = {
+        'open_ground': 0,
+        'trees': 0,
+        'lumberyard': 0
+    }
+
+    for row in lca_pair[minutes_passed % 2]:
+        for acre_char in row:
+            match acre_char:
+                case '.':
+                    acre_type_count['open_ground'] += 1
+                case '|':
+                    acre_type_count['trees'] += 1
+                case '#':
+                    acre_type_count['lumberyard'] += 1
+
+    return acre_type_count['trees'] * acre_type_count['lumberyard']
 
 
 def solve_problem(input_filename):
@@ -95,11 +115,11 @@ def solve_problem(input_filename):
                 if old_ele == '#': # lumberyard
                     if (adjacents['lumberyard'] < 1) | (adjacents['trees'] < 1):
                         new_ele = '.' # now it's open ground
-
                 new_row.append(new_ele)
         print(f'Minutes passed: {minutes_passed}')
         display(lca_pair[minutes_passed % 2])
 
+    print(f'The ending total resource value is: {get_total_resource_value(lca_pair, minutes_passed)} \n')
 
 solve_problem('input_sample0.txt')
 

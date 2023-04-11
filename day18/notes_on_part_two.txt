@@ -1,0 +1,9 @@
+Notes on day18 part 2:
+
+I presume that the coders are not expected to have the program evaluate each acre 1000000000 times.  (It would take too long to do that!)
+
+Probably the approach is to run it several times until a loop is discovered, so it will be sufficient to traverse the loop once only, and then extrapolate for times beyond that.
+
+I will use a deque, just in case it requires running many times before the loop starts.
+
+

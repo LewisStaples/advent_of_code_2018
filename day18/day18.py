@@ -3,6 +3,8 @@
 # adventOfCode 2018 day 18
 # https://adventofcode.com/2018/day/18
 
+import collections
+
 def display(lca):
     if len(lca) > 15:
         return
@@ -97,8 +99,9 @@ def get_total_resource_value(lca_pair, minutes_passed):
 
 
 def solve_problem(input_filename):
+    trv_deque = collections.deque([], 100)
     lca_pair = get_lca_pair(input_filename)
-    for minutes_passed in range(1, 11):
+    for minutes_passed in range(1, 1001):
         for row_number, (new_row, old_row) in enumerate(zip(lca_pair[minutes_passed % 2], lca_pair[(minutes_passed - 1) % 2])):
             new_row.clear()
             for column_number, old_ele in enumerate(old_row):
@@ -116,12 +119,31 @@ def solve_problem(input_filename):
                     if (adjacents['lumberyard'] < 1) | (adjacents['trees'] < 1):
                         new_ele = '.' # now it's open ground
                 new_row.append(new_ele)
-        print(f'Minutes passed: {minutes_passed}')
-        display(lca_pair[minutes_passed % 2])
+        # print(f'Minutes passed: {minutes_passed}')
 
-    print(f'The ending total resource value is: {get_total_resource_value(lca_pair, minutes_passed)} \n')
+        trv = get_total_resource_value(lca_pair, minutes_passed)
+        # trv_deque.append((minutes_passed, trv))
+        # trv_deque.append(trv)
+        trv_deque.appendleft(trv)
+        # Print out answer to first part of the problem
+        if minutes_passed == 10:
+            print(f'When minutes passed: {minutes_passed},  Total Resource Value: {trv}' )
+            # display(lca_pair[minutes_passed % 2])
 
-solve_problem('input_sample0.txt')
+    # print(f'The ending total resource value is: {get_total_resource_value(lca_pair, minutes_passed)} \n')
+
+    # for i in range(-1, -11, -1):
+    for i in range(27):
+        # print(i)
+        # popped_ele = trv_deque.pop()
+        popped_ele = trv_deque.popleft()
+        print(f'Index {i}: First match: {trv_deque.index(popped_ele)}')
+        # if popped_ele not in trv_deque:
+        #     print('No match')
+        #     break
+        # if trv_deque[i] no
+
+solve_problem('input.txt')
 
 
 def test__get_adjacents():

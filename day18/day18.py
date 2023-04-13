@@ -8,6 +8,7 @@ import collections
 def display(lca):
     if len(lca) > 15:
         return
+    print('Initial LCA status:')
     for row in lca:
         print(''.join(row))
     print()
@@ -24,7 +25,7 @@ def get_input(input_filename):
         for in_string in f:
             in_string = in_string.rstrip()
             lumber_collection_area.append(list(in_string))
-    print('Initial LCA status:')
+    # print('Initial LCA status:')
     display(lumber_collection_area)
     return lumber_collection_area
     
@@ -98,50 +99,66 @@ def get_total_resource_value(lca_pair, minutes_passed):
     return acre_type_count['trees'] * acre_type_count['lumberyard']
 
 
+def get_pop_pair(trv_deque, the_file):
+    popped_ele = trv_deque.popleft()
+    index_popped_ele = trv_deque.index(popped_ele)
+
+    the_file.write(f'{popped_ele = } , {index_popped_ele = }\n')
+    return popped_ele, index_popped_ele
+
+
 def solve_problem(input_filename):
-    trv_deque = collections.deque([], 100)
-    lca_pair = get_lca_pair(input_filename)
-    for minutes_passed in range(1, 1001):
-        for row_number, (new_row, old_row) in enumerate(zip(lca_pair[minutes_passed % 2], lca_pair[(minutes_passed - 1) % 2])):
-            new_row.clear()
-            for column_number, old_ele in enumerate(old_row):
-                new_ele = old_ele
-                adjacents = get_adjacents(lca_pair[(minutes_passed - 1) % 2], row_number, column_number)
-                if old_ele == '.':  # open ground
-                    if adjacents['trees'] >= 3:
-                        new_ele = '|'  # now it's trees:
 
-                if old_ele == '|': # trees
-                    if adjacents['lumberyard'] >= 3:
-                        new_ele = '#' # now it's a lumberyard
+    with open('problem_notes.txt', 'a') as the_file:
 
-                if old_ele == '#': # lumberyard
-                    if (adjacents['lumberyard'] < 1) | (adjacents['trees'] < 1):
-                        new_ele = '.' # now it's open ground
-                new_row.append(new_ele)
-        # print(f'Minutes passed: {minutes_passed}')
+        trv_deque = collections.deque([], 100)
+        lca_pair = get_lca_pair(input_filename)
+        for minutes_passed in range(1, 1001):
+            for row_number, (new_row, old_row) in enumerate(zip(lca_pair[minutes_passed % 2], lca_pair[(minutes_passed - 1) % 2])):
+                new_row.clear()
+                for column_number, old_ele in enumerate(old_row):
+                    new_ele = old_ele
+                    adjacents = get_adjacents(lca_pair[(minutes_passed - 1) % 2], row_number, column_number)
+                    if old_ele == '.':  # open ground
+                        if adjacents['trees'] >= 3:
+                            new_ele = '|'  # now it's trees:
 
-        trv = get_total_resource_value(lca_pair, minutes_passed)
-        # trv_deque.append((minutes_passed, trv))
-        # trv_deque.append(trv)
-        trv_deque.appendleft(trv)
-        # Print out answer to first part of the problem
-        if minutes_passed == 10:
-            print(f'When minutes passed: {minutes_passed},  Total Resource Value: {trv}' )
-            # display(lca_pair[minutes_passed % 2])
+                    if old_ele == '|': # trees
+                        if adjacents['lumberyard'] >= 3:
+                            new_ele = '#' # now it's a lumberyard
 
-    # print(f'The ending total resource value is: {get_total_resource_value(lca_pair, minutes_passed)} \n')
+                    if old_ele == '#': # lumberyard
+                        if (adjacents['lumberyard'] < 1) | (adjacents['trees'] < 1):
+                            new_ele = '.' # now it's open ground
+                    new_row.append(new_ele)
 
-    # for i in range(-1, -11, -1):
-    for i in range(27):
-        # print(i)
-        # popped_ele = trv_deque.pop()
-        popped_ele = trv_deque.popleft()
-        print(f'Index {i}: First match: {trv_deque.index(popped_ele)}')
-        # if popped_ele not in trv_deque:
-        #     print('No match')
-        #     break
-        # if trv_deque[i] no
+            trv = get_total_resource_value(lca_pair, minutes_passed)
+            trv_deque.appendleft(trv)
+
+            # Write to the file
+            the_file.write(f'Minutes passed: {minutes_passed},  Total Resource Value: {trv}\n')
+
+            # Print out answer to first part of the problem
+            if minutes_passed == 10:
+                # print(f'When minutes passed: {minutes_passed},  Total Resource Value: {trv}\n' )
+                print(f'The answer to part 1 is: {trv}')
+
+        the_file.write('\n==========================\n')
+        popped_ele, index_popped_ele = get_pop_pair(trv_deque, the_file)
+
+        steps_with_loop_needed = (1000000000 - minutes_passed) % index_popped_ele # - 1
+        # print(f'{steps_with_loop_needed = }')
+
+        for i in range(index_popped_ele):
+            popped_ele, index_popped_ele_new = get_pop_pair(trv_deque, the_file)
+            if index_popped_ele != index_popped_ele_new:
+                raise ValueError(f'Error:  index_popped_ele is not a constant !!!')
+
+        answer_part2, _ = get_pop_pair(trv_deque, the_file)
+        for _ in range(steps_with_loop_needed):
+            answer_part2, _ = get_pop_pair(trv_deque, the_file)
+        print(f'The answer to part 2 is: {answer_part2}')
+        print()
 
 solve_problem('input.txt')
 

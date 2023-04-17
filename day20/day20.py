@@ -51,9 +51,33 @@ def get_map(in_string):
     return ret_val
 
 
+def display(the_map):
+    print('-------------------')
+    min_x = float('inf')
+    max_x = float('-inf')
+    min_y = float('inf')
+    max_y = float('-inf')
+
+    for x,y in the_map.keys():
+        min_x = min(min_x, x)
+        max_x = max(max_x, x)
+        min_y = min(min_y, y)
+        max_y = max(max_y, y)
+    for y in range(max_y, min_y - 1, -1):
+        for x in range(min_x, max_x + 1):
+            if (x,y) in the_map:
+                print(the_map[(x,y)], end = '')
+            else:
+                print('?', end = '')
+            # print(the_map[x][y], end = '')
+        print()
+    print('-------------------')
+
+
 def solve_problem(input_filename):
     in_string = get_input_line(input_filename)
     the_map = get_map(in_string)
+    display(the_map)
     print(f'Without start and end characters: {in_string}')
     print()
 

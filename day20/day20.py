@@ -84,6 +84,9 @@ def get_map(in_string, i_init, curr_locn_in):
             ch_vector = get_vector(in_string[i])
         except IndexError:
             break
+        except ValueError:
+            # print(f'ValueError occured at character # {i}')
+            raise ValueError(f'ValueError occured at character # {i} ... \n\nprior_str: {in_string[:i]}\ntriggering character: {in_string[i]}\npost_str: {in_string[i+1:]}\noriginal_str:{in_string}\n')
         # Add new door to dict the_map
         curr_locn += ch_vector
         the_map[tuple(curr_locn)] = get_door(ch_vector)
@@ -123,7 +126,6 @@ def solve_problem(input_filename):
     the_map, _ = get_map(in_string, 1, None)
     add_walls(the_map)
     display(the_map)
-    print(f'Without start and end characters: {in_string}')
     print()
 
-solve_problem('input_sample2.txt')
+solve_problem('input_sample5.txt')

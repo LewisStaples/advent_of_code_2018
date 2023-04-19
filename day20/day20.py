@@ -5,6 +5,7 @@
 
 
 import numpy as np
+import copy
 
 def get_input_line(input_filename):
     print(f'\nUsing input file: {input_filename}\n')
@@ -21,8 +22,11 @@ def get_vector(ch):
         case 'E': return np.array([1,0])
         case 'S': return np.array([0,-1])
         case 'W': return np.array([-1,0])
+        case '$': return np.array([0,0])
+        case ')': return np.array([0,0])
         case _:
-            return np.array([0,0])
+            # return np.array([0,0])
+            raise ValueError(f'Character {ch} is not a compass direction!')
 
 def get_door(vector):
     if abs(vector[0]) == 1:
@@ -30,21 +34,40 @@ def get_door(vector):
     elif abs(vector[1]) == 1:
         return '-'
 
-def get_map(in_string, i_init):
+def get_map(in_string, i_init, curr_locn_in):
     ret_val = dict()
-    curr_locn = np.array([0,0])
-    ret_val[tuple(curr_locn)] = 'X'
-    for i in range(i_init,len(in_string) + 1):
-        if in_string[i] == '(':
-            ret_val_new, i = get_map(in_string, i + 1)
-        elif in_string[i] == '|':
-            pass
-        elif in_string[i] == ')':
-            break
-        elif in_string[i] == '$':
-            return ret_val, None
+    if curr_locn_in is None:
+        curr_locn = np.array([0,0])
+        ret_val[tuple(curr_locn)] = 'X'
+    else:
+        curr_locn = copy.deepcopy(curr_locn_in)
+        
+        dummy = 123
 
-        ch_vector = get_vector(in_string[i])
+    # for i in range(i_init,len(in_string) + 1):
+    i = i_init - 1
+    while i < len(in_string) - 1:
+        i += 1
+        if in_string[i] == '(': # in ['(','|']:
+            ret_val_new, i = get_map(in_string, i + 1, curr_locn)
+            ret_val |= ret_val_new
+        elif in_string[i] == '|':
+            curr_locn[0] = curr_locn_in[0]
+            curr_locn[1] = curr_locn_in[1]
+            continue
+            # try:
+            #     if in_string[i] == '|':
+            #         i -= 1
+            #     break
+            # except IndexError:
+            #     break
+        elif in_string[i] in [')','$']:
+            break
+
+        try:
+            ch_vector = get_vector(in_string[i])
+        except IndexError:
+            break
         # Add new door to dict ret_val
         curr_locn += ch_vector
         ret_val[tuple(curr_locn)] = get_door(ch_vector)
@@ -83,9 +106,9 @@ def display(the_map):
 
 def solve_problem(input_filename):
     in_string = get_input_line(input_filename)
-    the_map, _ = get_map(in_string, 1)
+    the_map, _ = get_map(in_string, 1, None)
     display(the_map)
     print(f'Without start and end characters: {in_string}')
     print()
 
-solve_problem('input_sample1.txt')
+solve_problem('input_sample2.txt')

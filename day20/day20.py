@@ -21,8 +21,6 @@ def get_vector(ch):
         case 'E': return np.array([1,0])
         case 'S': return np.array([0,-1])
         case 'W': return np.array([-1,0])
-        case '$': return np.array([0,0])
-        case ')': return np.array([0,0])
         case _:
             raise ValueError(f'Character {ch} is not a compass direction!')
 
@@ -73,6 +71,7 @@ def get_map(in_string, i_init, curr_locn_in):
         if in_string[i] == '(':
             the_map_new, i = get_map(in_string, i + 1, curr_locn)
             the_map |= the_map_new
+            continue
         elif in_string[i] == '|':
             curr_locn[0] = curr_locn_in[0]
             curr_locn[1] = curr_locn_in[1]
@@ -95,7 +94,7 @@ def get_map(in_string, i_init, curr_locn_in):
         curr_locn += ch_vector
         the_map[tuple(curr_locn)] = '.'
 
-    return the_map, i + 1
+    return the_map, i
 
 
 def display(the_map):

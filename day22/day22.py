@@ -31,8 +31,8 @@ def get_erosion_level(geologic_index, depth):
 
 def get_regional_geologic_indices(depth, target):
     regional_geologic_indices = list()
-    MAX_HEIGHT = max(16, target[1])
-    MAX_LENGTH = max(16, target[0])
+    MAX_HEIGHT = max(16, target[1] + 1)
+    MAX_LENGTH = max(16, target[0] + 1)
     
     # Top row (height == 0)
     regional_geologic_indices.append(list())
@@ -84,10 +84,21 @@ def display(regional_geologic_indices, target, depth):
         print()
     print()
 
+
+def get_total_risk_level(regional_geologic_indices, target, depth):
+    ret_val = 0
+    for row_num in range(target[1] + 1):
+        for col_num in range(target[0] + 1):
+            ret_val += get_erosion_level(regional_geologic_indices[row_num][col_num], depth) % 3
+
+    return ret_val
+
+
 def solve_problem(input_filename):
     depth, target = get_input(input_filename)
     regional_geologic_indices = get_regional_geologic_indices(depth, target)
     display(regional_geologic_indices, target, depth)
+    total_risk_level = get_total_risk_level(regional_geologic_indices, target, depth)
+    print(f'The total risk level is: {total_risk_level}\n')
 
-
-solve_problem('input_sample0.txt')
+solve_problem('input.txt')

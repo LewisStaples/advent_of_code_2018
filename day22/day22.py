@@ -30,6 +30,9 @@ def get_erosion_level(geologic_index, depth):
 
 
 def get_regional_geologic_indices(depth, target):
+    # This returns a list of lists of integers.
+    # Note that the indices are [y][x], which supports printing on the
+    # screen with x horizontal and y vertical.
     regional_geologic_indices = list()
     MAX_HEIGHT = max(16, target[1] + 1)
     MAX_LENGTH = max(16, target[0] + 1)
@@ -51,7 +54,6 @@ def get_regional_geologic_indices(depth, target):
             if (length, height) == target:
                 # Set target's geologic index to zero
                 regional_geologic_indices[-1][-1] = 0
-
     return regional_geologic_indices
 
 
@@ -104,12 +106,21 @@ def solve_problem(input_filename):
 solve_problem('input_sample0.txt')
 
 def test_0_0 ():
-    assert get_regional_geologic_indices(510, [10,10])[0][0] == 0
+    assert get_regional_geologic_indices(510, (10,10))[0][0] == 0
     assert get_erosion_level(0, 510) == 510
 
 def test_1_0 ():
-    assert get_regional_geologic_indices(510, [10,10])[1][0] == 16807
+    assert get_regional_geologic_indices(510, (10,10))[0][1] == 16807
     assert get_erosion_level(16807, 510) == 17317
 
+def test_0_1 ():
+    assert get_regional_geologic_indices(510, (10,10))[1][0] == 48271
+    assert get_erosion_level(48271, 510) == 8415
 
+def test_1_1 ():
+    assert get_regional_geologic_indices(510, (10,10))[1][1] == 145722555
+    assert get_erosion_level(145722555, 510) == 1805
 
+def test_10_10 ():
+    assert get_regional_geologic_indices(510, (10,10))[10][10] == 0
+    assert get_erosion_level(0, 510) == 510

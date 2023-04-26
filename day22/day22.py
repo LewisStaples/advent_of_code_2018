@@ -99,6 +99,17 @@ def solve_problem(input_filename):
     regional_geologic_indices = get_regional_geologic_indices(depth, target)
     display(regional_geologic_indices, target, depth)
     total_risk_level = get_total_risk_level(regional_geologic_indices, target, depth)
-    print(f'The total risk level is: {total_risk_level}\n')
+    print(f'The total risk level (the answer to part one) is: {total_risk_level}\n')
 
-solve_problem('input.txt')
+solve_problem('input_sample0.txt')
+
+def test_0_0 ():
+    assert get_regional_geologic_indices(510, [10,10])[0][0] == 0
+    assert get_erosion_level(0, 510) == 510
+
+def test_1_0 ():
+    assert get_regional_geologic_indices(510, [10,10])[1][0] == 16807
+    assert get_erosion_level(16807, 510) == 17317
+
+
+

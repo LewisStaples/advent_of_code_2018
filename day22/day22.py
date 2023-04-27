@@ -4,6 +4,16 @@
 # https://adventofcode.com/2018/day/22
 
 
+import enum
+import heapq
+import numpy as np
+
+class Equipment(enum.Enum):
+    TORCH = 0
+    CLIMBING_GEAR = 1
+    NEITHER = 2
+
+
 def get_input(input_filename):
     print(f'\nUsing input file: {input_filename}')
     with open(input_filename) as f:
@@ -97,11 +107,24 @@ def get_total_risk_level(regional_geologic_indices, target, depth):
 
 
 def solve_problem(input_filename):
+    # Solving part one
     depth, target = get_input(input_filename)
+
     regional_geologic_indices = get_regional_geologic_indices(depth, target)
     display(regional_geologic_indices, target, depth)
     total_risk_level = get_total_risk_level(regional_geologic_indices, target, depth)
     print(f'The total risk level (the answer to part one) is: {total_risk_level}\n')
+
+    # Clearing out variables that are no longer needed
+    del input_filename, total_risk_level
+
+    # Solving part two
+    pq = []
+    heapq.heappush(pq, [0, np.array([0,0]), Equipment.TORCH])
+    while True:
+        heapq.heappop(pq)
+        if len(pq) == 0:
+            break
 
 solve_problem('input_sample0.txt')
 

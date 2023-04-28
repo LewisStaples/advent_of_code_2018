@@ -8,6 +8,14 @@ import enum
 import heapq
 import numpy as np
 
+
+DIRECTIONS = [
+    np.array([0,1]),
+    np.array([0,-1]),
+    np.array([1,0]),
+    np.array([-1,0]),
+]
+
 class Equipment(enum.Enum):
     TORCH = 0
     CLIMBING_GEAR = 1
@@ -119,12 +127,64 @@ def solve_problem(input_filename):
     del input_filename, total_risk_level
 
     # Solving part two
+    arrival_times__by_region = dict()
     pq = []
     heapq.heappush(pq, [0, np.array([0,0]), Equipment.TORCH])
     while True:
-        heapq.heappop(pq)
-        if len(pq) == 0:
+        # Pull a new data point off of the queue
+        arrival_time, the_region, the_equipment = heapq.heappop(pq)
+        the_region_tuple = tuple(the_region)
+        if the_region_tuple not in arrival_times__by_region:
+            arrival_times__by_region[the_region_tuple] = {
+                Equipment.TORCH: arrival_time + 7,
+                Equipment.CLIMBING_GEAR: arrival_time + 7,
+                Equipment.NEITHER: arrival_time + 7,
+            }
+        arrival_times__by_region[the_region_tuple][the_equipment] = min(arrival_time, arrival_times__by_region[the_region_tuple][the_equipment])
+
+        # If appropriate, add new data points to the queue
+        # target_nparray = np.array(list(target))
+        for vector in DIRECTIONS:
+            new_region = the_region + vector
+            new_region_tuple = tuple(new_region)
+            if new_region[0] < 0 or new_region[1] < 0:
+                # The regions with negative X or Y are solid rock and cannot be traversed
+                continue
+            for the_equipment in Equipment:
+                new_arrival_time = 1 + arrival_times__by_region[the_region_tuple][the_equipment]
+                break
             break
+        break
+    
+                # Working on logic (commented out, below) to add to pq
+
+
+                # if new_region_tuple not in arrival_times__by_region or arrival_times__by_region[new_region_tuple][the_equipment] > new_arrival_time:
+
+                # flag = False
+                # if new_region_tuple not in arrival_times__by_region:
+                #     flag = True
+                # elif arrival_times__by_region[new_region_tuple][the_equipment] > new_arrival_time:
+                #     flag = True
+                # if [new_arrival_time, new_region, the_equipment] in pq:
+                #     flag = False
+                # if flag:
+                #     try:
+                #         heapq.heappush(pq, [new_arrival_time, new_region, the_equipment])
+                #     except ValueError:
+                #         dummy = 123
+
+        dummy = 123
+
+        # STOP CONDITION ...
+        # If the target has been found
+        if target in arrival_times__by_region:
+            target_arrival = min(arrival_times__by_region[target])
+            # if the smallest arrival time associated with the target is smaller than the smallest arrival_time in pq
+            if target_arrival < pq[0][0]:
+                break
+
+
 
 solve_problem('input_sample0.txt')
 

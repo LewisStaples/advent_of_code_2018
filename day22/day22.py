@@ -7,6 +7,7 @@
 import enum
 import heapq
 import numpy as np
+import uuid
 
 
 DIRECTIONS = [
@@ -129,13 +130,13 @@ def solve_problem(input_filename):
     # Solving part two
     arrival_times__by_region = dict()
     pq = []
-    heapq.heappush(pq, [0, np.array([0,0]), Equipment.TORCH])
+    heapq.heappush(pq, [0, uuid.uuid4().int, np.array([0,0]), Equipment.TORCH])
     while True:
         # Pull a new data point off of the queue
-        try:
-            arrival_time, the_region, the_equipment = heapq.heappop(pq)
-        except ValueError:
-            dummy = 123
+        # try:
+        arrival_time, _, the_region, the_equipment = heapq.heappop(pq)
+        # except ValueError:
+            # dummy = 123
         the_region_tuple = tuple(the_region)
         if the_region_tuple not in arrival_times__by_region:
             arrival_times__by_region[the_region_tuple] = {
@@ -173,7 +174,10 @@ def solve_problem(input_filename):
                     # flag = False
                 if flag:
                     try:
-                        heapq.heappush(pq, [new_arrival_time, new_region, the_equipment])
+                        heapq.heappush(pq, [new_arrival_time, uuid.uuid4().int, new_region, the_equipment])
+
+                        # heapq.heappush(pq, [0, uuid.uuid4().int, np.array([0,0]), Equipment.TORCH])
+
                     except ValueError:
                         dummy = 123
 

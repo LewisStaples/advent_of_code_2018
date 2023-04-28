@@ -132,7 +132,10 @@ def solve_problem(input_filename):
     heapq.heappush(pq, [0, np.array([0,0]), Equipment.TORCH])
     while True:
         # Pull a new data point off of the queue
-        arrival_time, the_region, the_equipment = heapq.heappop(pq)
+        try:
+            arrival_time, the_region, the_equipment = heapq.heappop(pq)
+        except ValueError:
+            dummy = 123
         the_region_tuple = tuple(the_region)
         if the_region_tuple not in arrival_times__by_region:
             arrival_times__by_region[the_region_tuple] = {
@@ -152,27 +155,27 @@ def solve_problem(input_filename):
                 continue
             for the_equipment in Equipment:
                 new_arrival_time = 1 + arrival_times__by_region[the_region_tuple][the_equipment]
-                break
-            break
-        break
+                # break
+            # break
+        # break
     
                 # Working on logic (commented out, below) to add to pq
 
 
                 # if new_region_tuple not in arrival_times__by_region or arrival_times__by_region[new_region_tuple][the_equipment] > new_arrival_time:
 
-                # flag = False
-                # if new_region_tuple not in arrival_times__by_region:
-                #     flag = True
-                # elif arrival_times__by_region[new_region_tuple][the_equipment] > new_arrival_time:
-                #     flag = True
+                flag = False
+                if new_region_tuple not in arrival_times__by_region:
+                    flag = True
+                elif arrival_times__by_region[new_region_tuple][the_equipment] > new_arrival_time:
+                    flag = True
                 # if [new_arrival_time, new_region, the_equipment] in pq:
-                #     flag = False
-                # if flag:
-                #     try:
-                #         heapq.heappush(pq, [new_arrival_time, new_region, the_equipment])
-                #     except ValueError:
-                #         dummy = 123
+                    # flag = False
+                if flag:
+                    try:
+                        heapq.heappush(pq, [new_arrival_time, new_region, the_equipment])
+                    except ValueError:
+                        dummy = 123
 
         dummy = 123
 

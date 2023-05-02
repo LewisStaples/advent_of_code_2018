@@ -26,27 +26,52 @@ def get_input_DSs(input_filename):
                 for x in pos_str
             ])
             pos_list.append(pos)
+    return r_list, pos_list
 
+
+def find_maximum(r_list, pos_list):
     r_max = max(r_list)
     index__r_max = r_list.index(r_max)
-    print(f'Maximum r: {r_max}, Associated POS: {pos_list[index__r_max]}')
-    print()
-    
-    # ADD ... return data structures with lines of input
-    return r_list, pos_list
-    
+    # print(f'Maximum r: {r_max}, Associated POS: {pos_list[index__r_max]}')
+    # print()
+    return r_max, pos_list[index__r_max]
+
+
+def manhattan_distance(pos_one, pos_two):
+    # return 42
+    ret_val = 0
+    pos_pair = zip(pos_one, pos_two)
+    for ele1, ele2 in pos_pair:
+        ret_val += abs(ele1 - ele2)
+    return ret_val
+
+
+def in_range(strongest_nanobot, pos_val, the_range):
+    return manhattan_distance(strongest_nanobot, pos_val) <= the_range
+
+def get_nanobot_count_within_range(pos_list, the_range, strongest_nanobot):
+    ret_val = 0
+
+    for pos_val in pos_list:
+        if in_range(strongest_nanobot, pos_val, the_range):
+            ret_val += 1
+    return ret_val
+
+
 def solve_problem(input_filename):
     r_list, pos_list = get_input_DSs(input_filename)
+    the_range, strongest_nanobot = find_maximum(r_list, pos_list)
+    nanobot_count_within_range = get_nanobot_count_within_range(pos_list, the_range, strongest_nanobot)
 
-    # Determine the largest value of r, and the associated pos value
-    
+    print(f'The answer to part one is {nanobot_count_within_range}\n')
+
     # Calculate Manhattan distances for each pos from the largest r's pos
     # If Manhattan distance is <= largest r, then this nanobot is in range.
     # Otherwise, it is not.
     
 
 
-solve_problem('input_sample0.txt')
+solve_problem('input.txt')
 
 # def test_sample_0():
 #     solve_problem('input_sample0.txt')

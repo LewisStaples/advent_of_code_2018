@@ -73,6 +73,11 @@ def solve_part_one(input_filename):
 def solve_part_two(input_filename):
     r_list, pos_list = get_input_DSs(input_filename)
     # Brute force looks like it will work on the example, but not on the graded problem.
+    # Instead .... Consider all spheres and then find all intersections between the spheres.
+    # Label the shapes cut by these intersections as constant number of chatbots are in range.
+    #
+    #
+    
 
 
 solve_part_one('input_sample0.txt')

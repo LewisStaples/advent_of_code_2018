@@ -76,7 +76,7 @@ def solve_part_two(input_filename):
     # Instead .... Consider all spheres and then find all intersections between the spheres.
     # Label the shapes cut by these intersections as constant number of chatbots are in range.
     #
-    #
+    #  Suggestion try using Z3
     
 
 

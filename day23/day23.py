@@ -4,6 +4,9 @@
 # https://adventofcode.com/2018/day/23
 
 
+# Importing z3-solver
+from z3 import *
+
 def get_input_DSs(input_filename):
     pos_list = list()
     r_list = list()
@@ -74,6 +77,8 @@ def solve_part_two(input_filename):
     r_list, pos_list = get_input_DSs(input_filename)
     # Brute force looks like it will work on the example, but not on the graded problem.
     # Instead .... Consider all spheres and then find all intersections between the spheres.
+    #     An intersection between any pair of spheres should be a circle
+
     # Label the shapes cut by these intersections as constant number of chatbots are in range.
     #
     #  Suggestion try using Z3

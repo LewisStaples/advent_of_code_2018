@@ -46,13 +46,37 @@ def get_input(input_filename):
                 the_input[army_name] = Army(army_name)
             else:
                 # It must be a new group
+                print(in_string)
+                the_unit_count_str, in_string = in_string.split(' units each with ')
+                the_hit_point_str, in_string = in_string.split(' hit points ')
+                if in_string[0] == '(':
+                    paren_str, in_string = in_string[1:].split(') ')
+                    paren_str_list = paren_str.split('; ')
+                    dummy = 123
+                in_string = in_string.replace('with an attack that does ', '')
+                in_string_list = in_string.split(' ', )
+                the_input[army_name].groups.append(
+                    Group(
+                        int(the_unit_count_str),
+                        int(the_hit_point_str),
+                        int(in_string_list[0]),
+                        in_string_list[1],
+                        int(in_string_list[5]),
+
+                        # DUMMY VARIABLES ... NEED TO COMPLETE LOGIC HERE ....
+                        {''},
+                        {''}
+                    )
+                )
+                dummy = 123
+
                 continue  # TO BE IMPLEMENTED LATER ....
             print(in_string)
     print()
     return the_input
     
 def solve_problem(input_filename):
-    the_input = get_input(input_filename)
+    status = get_input(input_filename)
     keep_fighting = True
     
     while keep_fighting:

@@ -13,8 +13,10 @@ class Group:
     attack_damage: int
     attack_type: str
     initiative: int
-    weaknesses: set[str]
-    immunities: set[str]
+    paren_characterstics: dict
+    # weaknesses: set[str]
+    # immunities: set[str]
+    
 
 # @dataclass
 class Army:
@@ -49,10 +51,13 @@ def get_input(input_filename):
                 print(in_string)
                 the_unit_count_str, in_string = in_string.split(' units each with ')
                 the_hit_point_str, in_string = in_string.split(' hit points ')
+                paren_characterstics = dict()
                 if in_string[0] == '(':
                     paren_str, in_string = in_string[1:].split(') ')
                     paren_str_list = paren_str.split('; ')
-                    dummy = 123
+                    for paren_ele in paren_str_list:
+                        str1, str2 = paren_ele.split(' to ')
+                        paren_characterstics[str1] = str2.split(', ')
                 in_string = in_string.replace('with an attack that does ', '')
                 in_string_list = in_string.split(' ', )
                 the_input[army_name].groups.append(
@@ -63,9 +68,12 @@ def get_input(input_filename):
                         in_string_list[1],
                         int(in_string_list[5]),
 
-                        # DUMMY VARIABLES ... NEED TO COMPLETE LOGIC HERE ....
-                        {''},
-                        {''}
+                        paren_characterstics
+                        # # DUMMY VARIABLES ... NEED TO COMPLETE LOGIC HERE ....
+                        # # weaknesses
+                        # {''},
+                        # # immunities
+                        # {''}
                     )
                 )
                 dummy = 123

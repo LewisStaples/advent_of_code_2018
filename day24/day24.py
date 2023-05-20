@@ -4,6 +4,7 @@
 # https://adventofcode.com/2018/day/24
 
 from dataclasses import dataclass
+from collections import namedtuple
 
 
 @dataclass
@@ -14,8 +15,9 @@ class Group:
     attack_type: str
     initiative: int
     paren_characterstics: dict
-    # weaknesses: set[str]
-    # immunities: set[str]
+
+    def get_effective_power(self):
+        return self.unit_count * self.attack_damage
     
 
 # @dataclass
@@ -86,9 +88,33 @@ def get_input(input_filename):
 def solve_problem(input_filename):
     status = get_input(input_filename)
     keep_fighting = True
-    
+
+
+    GroupOrderType = namedtuple('GroupOrderType', 
+                                ['ArmyName', 
+                                    'GroupNumber',
+                                    'EffectivePower',
+                                    'Initiative'])
+
+
     while keep_fighting:
         # Phase 1:  target selection
+        
+        # "In decreasing order of effective power, groups choose their targets; 
+        # "in a tie, the group with the higher initiative chooses first
+
+        GroupOrderRecords = list() # actually use a priorityqueue
+        for armyname in status:
+            for the_group in status[armyname].groups:
+                pass  # add the_group to the priorityqueue
+
+
+
+        # "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
+
+        # "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
+
+
         # Phase 2:  attacking
         # Dummy stopping condition: combat ends once one army has lost all of its units
         keep_fighting = False

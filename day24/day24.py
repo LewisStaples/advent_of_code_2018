@@ -5,6 +5,7 @@
 
 from dataclasses import dataclass
 from collections import namedtuple
+from queue import PriorityQueue
 
 
 @dataclass
@@ -90,11 +91,16 @@ def solve_problem(input_filename):
     keep_fighting = True
 
 
-    GroupOrderType = namedtuple('GroupOrderType', 
-                                ['ArmyName', 
-                                    'GroupNumber',
-                                    'EffectivePower',
-                                    'Initiative'])
+    GroupID = namedtuple('GroupID', 
+        ['ArmyName', 
+            'GroupNumber']
+    )
+
+    # GroupOrderType = namedtuple('GroupOrderType', 
+    #                             ['ArmyName', 
+    #                                 'GroupNumber',
+    #                                 'EffectivePower',
+    #                                 'Initiative'])
 
 
     while keep_fighting:
@@ -102,13 +108,17 @@ def solve_problem(input_filename):
         
         # "In decreasing order of effective power, groups choose their targets; 
         # "in a tie, the group with the higher initiative chooses first
-
-        GroupOrderRecords = list() # actually use a priorityqueue
+        GroupOrderRecords = PriorityQueue()
         for armyname in status:
             for the_group in status[armyname].groups:
-                pass  # add the_group to the priorityqueue
+                GroupOrderRecords.put((
+                    (0 - the_group.get_effective_power(), 0 - the_group.initiative),
+                    the_group
+                ))
 
-
+        while not GroupOrderRecords.empty():
+            next_item = GroupOrderRecords.get()
+            print(f'{next_item}\n')
 
         # "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
 

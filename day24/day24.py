@@ -116,13 +116,39 @@ def solve_problem(input_filename):
                     the_group
                 ))
 
+        fight_order = dict()
         while not GroupOrderRecords.empty():
-            next_item = GroupOrderRecords.get()
-            print(f'{next_item}\n')
+            the_offense_group = GroupOrderRecords.get()[1]
 
-        # "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
+            # "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
 
-        # "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
+            # "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
+
+            # Therefore, to choose the_defense_group to accompany the_offense_group, you should consider all groups that aren't yet assigned as the_defense_group to any the_offense_group, and review how the_defense_group's weaknesses and immunities impact the attack from the_offense_group.  After revewing all not yet assigned the_defense_group--s, choose the one that results in the_offense_group doing the most damage
+            the_defense_group = None
+
+            # Choose target, and index by initiative
+            # print(f'{next_item}\n')
+            AttackPairingType = namedtuple(
+                'AttackPairingType',
+                ['Attacker', 'Defender']
+            )
+
+            fight_order[the_offense_group.initiative] = AttackPairingType(
+                the_offense_group,
+                the_defense_group
+            )
+
+    # GroupOrderType = namedtuple('GroupOrderType', 
+    #                             ['ArmyName', 
+    #                                 'GroupNumber',
+    #                                 'EffectivePower',
+    #                                 'Initiative'])
+
+
+        # Groups attack in decreasing order of initiative, regardless of whether they are part of the infection or the immune system. 
+
+
 
 
         # Phase 2:  attacking

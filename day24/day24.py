@@ -10,6 +10,7 @@ from queue import PriorityQueue
 
 @dataclass
 class Group:
+    army_name: str
     unit_count: int
     hit_points: int
     attack_damage: int
@@ -65,6 +66,7 @@ def get_input(input_filename):
                 in_string_list = in_string.split(' ', )
                 the_input[army_name].groups.append(
                     Group(
+                        army_name,
                         int(the_unit_count_str),
                         int(the_hit_point_str),
                         int(in_string_list[0]),
@@ -85,7 +87,44 @@ def get_input(input_filename):
             print(in_string)
     print()
     return the_input
-    
+
+
+# "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
+
+# "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
+
+# Therefore, to choose the_defense_group to accompany the_offense_group, you should consider all groups that aren't yet assigned as the_defense_group to any the_offense_group, and review how the_defense_group's weaknesses and immunities impact the attack from the_offense_group.  After revewing all not yet assigned the_defense_group--s, choose the one that results in the_offense_group doing the most damage
+def get_defense_group(status, the_offense_group, defense_groups_specfied):
+    potential_defense_groups = list()
+    for army_name in status:
+        if army_name == the_offense_group.army_name:
+            # the_offense_group cannot attack groups in its own army
+            continue
+
+        for the_group in status[army_name].groups:
+            if the_group not in defense_groups_specfied:
+                # the_offense_group could only attack groups that have not already been claimed to attack by a prior offense_group
+                potential_defense_groups.append(the_group)
+                # # the_offense_group cannot attack groups that have already been claimed to attack by a prior offense_group
+                # continue
+
+    if len(potential_defense_groups) == 0:
+        # No groups are left to be attacked
+        pass
+
+    if len(potential_defense_groups) > 1:
+        pass # use selection process # 1  ...  deal the most damage
+    if len(potential_defense_groups) > 1:
+        pass # use selection process # 2  ...  the largest effective power
+    if len(potential_defense_groups) > 1:
+        pass # use selection process # 3  ...  the highest initiative
+
+
+
+    return potential_defense_groups[0], defense_groups_specfied.append(potential_defense_groups[0])
+
+    return None, None
+
 def solve_problem(input_filename):
     status = get_input(input_filename)
     keep_fighting = True
@@ -117,15 +156,12 @@ def solve_problem(input_filename):
                 ))
 
         fight_order = dict()
+        defense_groups_specfied = list()
         while not GroupOrderRecords.empty():
             the_offense_group = GroupOrderRecords.get()[1]
 
-            # "The attacking group chooses to target the group in the enemy army to which it would deal the most damage (after accounting for weaknesses and immunities, but not accounting for whether the defending group has enough units to actually receive all of that damage).
 
-            # "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
-
-            # Therefore, to choose the_defense_group to accompany the_offense_group, you should consider all groups that aren't yet assigned as the_defense_group to any the_offense_group, and review how the_defense_group's weaknesses and immunities impact the attack from the_offense_group.  After revewing all not yet assigned the_defense_group--s, choose the one that results in the_offense_group doing the most damage
-            the_defense_group = None
+            the_defense_group, defense_groups_specfied = get_defense_group(status, the_offense_group, defense_groups_specfied)
 
             # Choose target, and index by initiative
             # print(f'{next_item}\n')

@@ -96,15 +96,15 @@ def get_input(input_filename):
 # Therefore, to choose the_defense_group to accompany the_offense_group, you should consider all groups that aren't yet assigned as the_defense_group to any the_offense_group, and review how the_defense_group's weaknesses and immunities impact the attack from the_offense_group.  After revewing all not yet assigned the_defense_group--s, choose the one that results in the_offense_group doing the most damage
 def get_defense_group(status, the_offense_group, defense_groups_specfied):
     potential_defense_groups = list()
-    for army_name in status:
-        if army_name == the_offense_group.army_name:
+    for defensive_army_name in status:
+        if defensive_army_name == the_offense_group.army_name:
             # the_offense_group cannot attack groups in its own army
             continue
 
-        for the_group in status[army_name].groups:
-            if the_group not in defense_groups_specfied:
+        for the_group in status[defensive_army_name].groups:
+            if the_group not in potential_defense_groups:
                 # the_offense_group could only attack groups that have not already been claimed to attack by a prior offense_group
-                potential_defense_groups.append(the_group)
+                potential_defense_groups.remove(the_group)
                 # # the_offense_group cannot attack groups that have already been claimed to attack by a prior offense_group
                 # continue
 
@@ -112,8 +112,19 @@ def get_defense_group(status, the_offense_group, defense_groups_specfied):
         # No groups are left to be attacked
         pass
 
-    if len(potential_defense_groups) > 1:
-        pass # use selection process # 1  ...  deal the most damage
+    
+    for defense_group in potential_defense_groups:
+        # Attack can't happen if it's immune
+        if the_offense_group.attack_type in defense_group.paren_characteristics['immune']:
+            potential_defense_groups.remove(defense_group)
+        if the_offense_group.attack_type in defense_group.paren_characteristics['weak']:
+            # COME_BACK_TO_THIS .... Only if there is another one with normal characteristic
+            if True:
+                potential_defense_groups.remove(defense_group)
+    # if len(potential_defense_groups) > 1:
+    #     the_offense_group.attack_type
+    #    pass # use selection process # 1  ...  deal the most damage
+
     if len(potential_defense_groups) > 1:
         pass # use selection process # 2  ...  the largest effective power
     if len(potential_defense_groups) > 1:

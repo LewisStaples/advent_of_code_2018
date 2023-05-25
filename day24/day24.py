@@ -16,7 +16,7 @@ class Group:
     attack_damage: int
     attack_type: str
     initiative: int
-    paren_characterstics: dict
+    paren_characteristics: dict
 
     def get_effective_power(self):
         return self.unit_count * self.attack_damage
@@ -55,13 +55,13 @@ def get_input(input_filename):
                 print(in_string)
                 the_unit_count_str, in_string = in_string.split(' units each with ')
                 the_hit_point_str, in_string = in_string.split(' hit points ')
-                paren_characterstics = dict()
+                paren_characteristics = dict()
                 if in_string[0] == '(':
                     paren_str, in_string = in_string[1:].split(') ')
                     paren_str_list = paren_str.split('; ')
                     for paren_ele in paren_str_list:
                         str1, str2 = paren_ele.split(' to ')
-                        paren_characterstics[str1] = str2.split(', ')
+                        paren_characteristics[str1] = str2.split(', ')
                 in_string = in_string.replace('with an attack that does ', '')
                 in_string_list = in_string.split(' ', )
                 the_input[army_name].groups.append(
@@ -73,7 +73,8 @@ def get_input(input_filename):
                         in_string_list[1],
                         int(in_string_list[5]),
 
-                        paren_characterstics
+                        paren_characteristics
+
                         # # DUMMY VARIABLES ... NEED TO COMPLETE LOGIC HERE ....
                         # # weaknesses
                         # {''},
@@ -102,25 +103,32 @@ def get_defense_group(status, the_offense_group, defense_groups_specfied):
             continue
 
         for the_group in status[defensive_army_name].groups:
-            if the_group not in potential_defense_groups:
+            if the_group not in defense_groups_specfied:
                 # the_offense_group could only attack groups that have not already been claimed to attack by a prior offense_group
-                potential_defense_groups.remove(the_group)
+                potential_defense_groups.append(the_group)
                 # # the_offense_group cannot attack groups that have already been claimed to attack by a prior offense_group
                 # continue
 
     if len(potential_defense_groups) == 0:
         # No groups are left to be attacked
-        pass
+        None, defense_groups_specfied
+        
 
-    
+    weak_flag = False
     for defense_group in potential_defense_groups:
         # Attack can't happen if it's immune
         if the_offense_group.attack_type in defense_group.paren_characteristics['immune']:
             potential_defense_groups.remove(defense_group)
+        # Weak trumps non-weak
         if the_offense_group.attack_type in defense_group.paren_characteristics['weak']:
-            # COME_BACK_TO_THIS .... Only if there is another one with normal characteristic
-            if True:
+            weak_flag = True
+    if weak_flag:
+        # Remove any non-weak potential_defense_groups
+        for defense_group in potential_defense_groups:
+            if the_offense_group.attack_type not in defense_group.paren_characteristics['weak']:
                 potential_defense_groups.remove(defense_group)
+
+
     # if len(potential_defense_groups) > 1:
     #     the_offense_group.attack_type
     #    pass # use selection process # 1  ...  deal the most damage

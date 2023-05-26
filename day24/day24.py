@@ -95,7 +95,7 @@ def get_input(input_filename):
 # "If an attacking group is considering two defending groups to which it would deal equal damage, it chooses to target the defending group with the largest effective power; if there is still a tie, it chooses the defending group with the highest initiative. If it cannot deal any defending groups damage, it does not choose a target. Defending groups can only be chosen as a target by one attacking group.
 
 # Therefore, to choose the_defense_group to accompany the_offense_group, you should consider all groups that aren't yet assigned as the_defense_group to any the_offense_group, and review how the_defense_group's weaknesses and immunities impact the attack from the_offense_group.  After revewing all not yet assigned the_defense_group--s, choose the one that results in the_offense_group doing the most damage
-def get_defense_group(status, the_offense_group, defense_groups_specfied):
+def get_defense_group(status, the_offense_group, defense_groups_specified):
     potential_defense_groups = list()
     for defensive_army_name in status:
         if defensive_army_name == the_offense_group.army_name:
@@ -103,7 +103,7 @@ def get_defense_group(status, the_offense_group, defense_groups_specfied):
             continue
 
         for the_group in status[defensive_army_name].groups:
-            if the_group not in defense_groups_specfied:
+            if the_group not in defense_groups_specified:
                 # the_offense_group could only attack groups that have not already been claimed to attack by a prior offense_group
                 potential_defense_groups.append(the_group)
                 # # the_offense_group cannot attack groups that have already been claimed to attack by a prior offense_group
@@ -111,13 +111,14 @@ def get_defense_group(status, the_offense_group, defense_groups_specfied):
 
     if len(potential_defense_groups) == 0:
         # No groups are left to be attacked
-        None, defense_groups_specfied
+        None, defense_groups_specified
         
 
     weak_flag = False
     for defense_group in potential_defense_groups:
         # Attack can't happen if it's immune
-        if the_offense_group.attack_type in defense_group.paren_characteristics['immune']:
+        if ('immune' in defense_group.paren_characteristics) and \
+            (the_offense_group.attack_type in defense_group.paren_characteristics['immune']):
             potential_defense_groups.remove(defense_group)
         # Weak trumps non-weak
         if the_offense_group.attack_type in defense_group.paren_characteristics['weak']:
@@ -140,7 +141,7 @@ def get_defense_group(status, the_offense_group, defense_groups_specfied):
 
 
 
-    return potential_defense_groups[0], defense_groups_specfied.append(potential_defense_groups[0])
+    return potential_defense_groups[0], defense_groups_specified.append(potential_defense_groups[0])
 
     return None, None
 
@@ -175,12 +176,12 @@ def solve_problem(input_filename):
                 ))
 
         fight_order = dict()
-        defense_groups_specfied = list()
+        defense_groups_specified = list()
         while not GroupOrderRecords.empty():
             the_offense_group = GroupOrderRecords.get()[1]
 
 
-            the_defense_group, defense_groups_specfied = get_defense_group(status, the_offense_group, defense_groups_specfied)
+            the_defense_group, defense_groups_specified = get_defense_group(status, the_offense_group, defense_groups_specified)
 
             # Choose target, and index by initiative
             # print(f'{next_item}\n')

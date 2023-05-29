@@ -6,16 +6,20 @@
 
 import numpy as np
 import itertools
+from functools import reduce
+
+def manh_dist_less_or_equal_than(the_tuple, the_threshold):
+    return reduce((lambda x, y: x + abs(y)), the_tuple, 0) <= the_threshold
+
 
 def get_three_cube(this_point):
     three_cube = set()
     # print(this_point)
     for dude in itertools.product(range(-3, 4), repeat = 4):
         # print(np.array(dude))
-        new_point = this_point + np.array(dude)
-        three_cube.add(tuple(new_point))
-        # print(new_point)
-        # pass
+        if manh_dist_less_or_equal_than(dude, 3):
+            new_point = this_point + np.array(dude)
+            three_cube.add(tuple(new_point))
     return three_cube
 
 def get_constellation_count(input_filename):

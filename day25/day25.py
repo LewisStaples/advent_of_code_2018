@@ -14,11 +14,9 @@ def manh_dist_less_or_equal_than(the_tuple, the_threshold):
 
 def get_three_cube(this_point):
     three_cube = set()
-    # print(this_point)
-    for dude in itertools.product(range(-3, 4), repeat = 4):
-        # print(np.array(dude))
-        if manh_dist_less_or_equal_than(dude, 3):
-            new_point = this_point + np.array(dude)
+    for the_tuple in itertools.product(range(-3, 4), repeat = 4):
+        if manh_dist_less_or_equal_than(the_tuple, 3):
+            new_point = this_point + np.array(the_tuple)
             three_cube.add(tuple(new_point))
     return three_cube
 
@@ -37,7 +35,12 @@ def get_constellation_count(input_filename):
             for index_constellation, constellation in enumerate(constellation_list):
                 if len(constellation.intersection(three_cube)) > 0:
                     indices_constellation.append(index_constellation)
-                    break
+            # if len(indices_constellation) == 0:
+                # Create a new constellation
+            # elsif len(indices_constellation) == 1:
+                # Add to that constellation
+            # else  # (hence len(indices_constellation) > 1:)
+                # Merge constellations together and add to the merged constellation
             print()
     print()
 

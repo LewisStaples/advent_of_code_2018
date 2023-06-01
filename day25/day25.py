@@ -21,31 +21,43 @@ def get_three_cube(this_point):
     return three_cube
 
 def get_constellation_count(input_filename):
-    constellation_list = [set()]
+    constellation_list = []
     # Reading input from the input file
     print(f'\nUsing input file: {input_filename}\n')
     with open(input_filename) as f:
         # Pull in each line from the input file
         for in_string in f:
             this_point = np.array([int(x) for x in in_string.rstrip().split(',')])
-            print(this_point)
             three_cube = get_three_cube(this_point)
             indices_constellation = list()
 
             for index_constellation, constellation in enumerate(constellation_list):
                 if len(constellation.intersection(three_cube)) > 0:
                     indices_constellation.append(index_constellation)
-            # if len(indices_constellation) == 0:
+            if len(indices_constellation) == 0:
                 # Create a new constellation
-            # elsif len(indices_constellation) == 1:
-                # Add to that constellation
-            # else  # (hence len(indices_constellation) > 1:)
-                # Merge constellations together and add to the merged constellation
-            print()
-    print()
+                constellation_list.append(    
+                    {tuple(this_point)}
+                )
+            else:
+                # Add to the smallest constellation in constellation_list
+                constellation_list[
+                    indices_constellation[0]
+                ].add(tuple(this_point))
 
-    return 42
+            if len(indices_constellation) > 1:
+                # Merge constellations together
+                new_constellation = set()
+                while len(indices_constellation) > 0:
+                    # One at a time, remove one constellation to be merged together
+                    # and add it to new_constellation
+                    new_constellation.update(constellation_list.pop(indices_constellation.pop()))
+                
+                # Now add the merged constellation to constellation_list
+                constellation_list.append(new_constellation)
+                
+    return len(constellation_list)
     
-constellation_count = get_constellation_count('input_sample0.txt')
-print(f'The number of constellations is: {constellation_count}')
+constellation_count = get_constellation_count('input.txt')
+print(f'The number of constellations is: {constellation_count}\n')
 

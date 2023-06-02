@@ -8,26 +8,27 @@ import numpy as np
 import itertools
 from functools import reduce
 
+
 def manh_dist_less_or_equal_than(the_tuple, the_threshold):
     return reduce((lambda x, y: x + abs(y)), the_tuple, 0) <= the_threshold
 
 
 def get_three_cube(this_point):
     three_cube = set()
-    for the_tuple in itertools.product(range(-3, 4), repeat = 4):
+    for the_tuple in itertools.product(range(-3, 4), repeat=4):
         if manh_dist_less_or_equal_than(the_tuple, 3):
-            new_point = this_point + np.array(the_tuple)
-            three_cube.add(tuple(new_point))
+            three_cube.add(tuple(this_point + np.array(the_tuple)))
     return three_cube
+
 
 def get_constellation_count(input_filename):
     constellation_list = []
     # Reading input from the input file
-    print(f'\nUsing input file: {input_filename}\n')
+    print(f"\nUsing input file: {input_filename}\n")
     with open(input_filename) as f:
         # Pull in each line from the input file
         for in_string in f:
-            this_point = np.array([int(x) for x in in_string.rstrip().split(',')])
+            this_point = np.array([int(x) for x in in_string.rstrip().split(",")])
             three_cube = get_three_cube(this_point)
             indices_constellation = list()
 
@@ -36,28 +37,29 @@ def get_constellation_count(input_filename):
                     indices_constellation.append(index_constellation)
             if len(indices_constellation) == 0:
                 # Create a new constellation
-                constellation_list.append(    
-                    {tuple(this_point)}
-                )
+                constellation_list.append({tuple(this_point)})
             else:
-                # Add to the smallest constellation in constellation_list
-                constellation_list[
-                    indices_constellation[0]
-                ].add(tuple(this_point))
+                # Since this_point appears in at least one constellation
+                # Add this_point to the smallest constellation in constellation_list
+                constellation_list[indices_constellation[0]].add(tuple(this_point))
 
             if len(indices_constellation) > 1:
-                # Merge constellations together
+                # Since this_point appears in more than one constellation
+                # Merge constellations together (which will include this_point,
+                # as it was already added to element # 0)
                 new_constellation = set()
                 while len(indices_constellation) > 0:
-                    # One at a time, remove one constellation to be merged together
+                    # One at a time, remove one of the constellations to be merged together
                     # and add it to new_constellation
-                    new_constellation.update(constellation_list.pop(indices_constellation.pop()))
-                
+                    new_constellation.update(
+                        constellation_list.pop(indices_constellation.pop())
+                    )
+
                 # Now add the merged constellation to constellation_list
                 constellation_list.append(new_constellation)
-                
-    return len(constellation_list)
-    
-constellation_count = get_constellation_count('input.txt')
-print(f'The number of constellations is: {constellation_count}\n')
 
+    return len(constellation_list)
+
+
+constellation_count = get_constellation_count("input.txt")
+print(f"The number of constellations is: {constellation_count}\n")
